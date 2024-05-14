@@ -11,5 +11,6 @@ namespace InfoMed.Data
         }
 
         public DbSet<Event> Event { get; set; }
+        public DbSet<EventVersions> EventVersions { get; set; }
     }
 }

@@ -9,6 +9,7 @@ namespace InfoMed.Utils
         public AutoMapperProfile()
         {
             CreateMap<Event, EventDto>().ReverseMap();
+            CreateMap<EventVersions, EventVersionDto>().ReverseMap();
         }
     }
 }
