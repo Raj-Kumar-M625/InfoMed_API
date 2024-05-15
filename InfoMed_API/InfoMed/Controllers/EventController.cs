@@ -8,7 +8,7 @@ namespace InfoMed.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class EventController : ControllerBase
     {
         private readonly IEventService _eventService;
@@ -41,6 +41,14 @@ namespace InfoMed.Controllers
             var result = await _eventService.UpdateEvent(_event, userId);
             if (result) return Ok(result);
             return BadRequest("Error occured while updating!");
+        }
+
+        [HttpGet("GetEventById")]
+        public async Task<ActionResult<EventVersionDto>> GetEventById(int id)
+        {
+            var _event = await _eventService.GetEventById(id);
+            if (_event != null) return Ok(_event);
+            return BadRequest("Error occured while fetching data!");
         }
     }
 }

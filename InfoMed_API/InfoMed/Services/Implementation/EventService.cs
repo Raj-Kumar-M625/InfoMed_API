@@ -35,16 +35,32 @@ namespace InfoMed.Services.Implementation
             }
         }
 
-        public async Task<bool> AddEvent(EventVersionDto _event,string userId)
+        public async Task<EventVersionDto> GetEventById(int id)
+        {
+            try
+            {
+                var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEvent == id);
+                return _mapper.Map<EventVersionDto>(_event);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                return null!;
+            }
+        }
+
+        public async Task<bool> AddEvent(EventVersionDto _event, string userId)
         {
             try
             {
                 var newEvent = _mapper.Map<EventVersions>(_event);
                 newEvent.ModifiedDate = DateTime.Now;
-                newEvent.ModifiedBy = int.Parse(userId);
+                newEvent.ModifiedBy = 1;
                 await _dbContext.EventVersions.AddAsync(newEvent);
+                await _dbContext.SaveChangesAsync();
                 return true;
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 _log.Error(ex.Message);
                 return false;
@@ -55,7 +71,7 @@ namespace InfoMed.Services.Implementation
         {
             try
             {
-                var dbObject = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEventVersion == _event.IdEventVersion);
+                var dbObject = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEvent == _event.IdEvent);
                 if (dbObject != null)
                 {
                     dbObject.IdEvent = _event.IdEvent;
@@ -79,8 +95,9 @@ namespace InfoMed.Services.Implementation
                     dbObject.EventEndDate = _event.EventEndDate;
                     dbObject.NoOfDays = _event.NoOfDays;
                     dbObject.ModifiedDate = DateTime.Now;
-                    dbObject.ModifiedBy = int.Parse(userId);
+                    dbObject.ModifiedBy = 1;
                     _dbContext.EventVersions.Update(dbObject);
+                    await _dbContext.SaveChangesAsync();
                     return true;
                 }
                 return false;

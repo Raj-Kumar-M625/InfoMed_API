@@ -7,5 +7,6 @@ namespace InfoMed.Services.Interface
         public Task<List<EventVersionDto>> GetEvents();
         public Task<bool> AddEvent(EventVersionDto _event,string userId);
         public Task<bool> UpdateEvent(EventVersionDto _event,string userId);
+        public Task<EventVersionDto> GetEventById(int id);
     }
 }
