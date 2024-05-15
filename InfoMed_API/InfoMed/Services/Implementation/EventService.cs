@@ -39,7 +39,7 @@ namespace InfoMed.Services.Implementation
         {
             try
             {
-                var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEvent == id);
+                var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEventVersion == id);
                 return _mapper.Map<EventVersionDto>(_event);
             }
             catch (Exception ex)
@@ -71,7 +71,7 @@ namespace InfoMed.Services.Implementation
         {
             try
             {
-                var dbObject = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEvent == _event.IdEvent);
+                var dbObject = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEventVersion == _event.IdEventVersion);
                 if (dbObject != null)
                 {
                     dbObject.IdEvent = _event.IdEvent;
