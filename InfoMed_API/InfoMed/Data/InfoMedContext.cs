@@ -10,7 +10,11 @@ namespace InfoMed.Data
         {
         }
 
+        public DbSet<User> Users { get; set; }
         public DbSet<Event> Event { get; set; }
         public DbSet<EventVersions> EventVersions { get; set; }
+        public DbSet<EventsMaster> EventsMaster { get; set; }
+        public DbSet<TextContentAreas> TextContentAreas { get; set; }
+        public DbSet<EventType> EventType { get; set; }
     }
 }

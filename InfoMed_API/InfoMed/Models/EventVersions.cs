@@ -5,12 +5,13 @@ namespace InfoMed.Models
     public class EventVersions
     {
         [Key]
-        public int IdEvent { get; set; }
         public int IdEventVersion { get; set; }
+        public int IdEvent { get; set; }
         public int IdVersion { get; set; }
         public string VersionStatus { get; set; }
         public string EventWebPageName { get; set; }
         public string EventName { get; set; }
+        public string? EventType { get; set; }
         public string VenueName { get; set; }
         public string VenueAddress { get; set; }
         public string VenueLatLong { get; set; }

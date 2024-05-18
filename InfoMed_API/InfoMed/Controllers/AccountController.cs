@@ -1,4 +1,7 @@
-﻿using InfoMed.Models;
+﻿using InfoMed.Data;
+using InfoMed.DTO;
+using InfoMed.Models;
+using log4net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,45 +18,69 @@ namespace InfoMed.Controllers
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IConfiguration _configuration;
-        public AccountController(UserManager<IdentityUser> userManager, IConfiguration configuration)
+        private readonly InfoMedContext _dbContext;
+        public AccountController(UserManager<IdentityUser> userManager, IConfiguration configuration, InfoMedContext dbContext)
         {
             _userManager = userManager;
             _configuration = configuration;
+            _dbContext = dbContext;
         }
 
         [HttpPost("register")]
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] User user)
         {
-            // Check If user already Exists In [Asp.NetUsers]
-            var userExists = await _userManager.FindByEmailAsync(user.Email);
-            if (userExists != null)
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Status = "Error", Message = "User already exists!" });
-
-            // Create a New User in [Asp.NetUsers]
-            IdentityUser identityUser = new()
+            using (var transaction = await _dbContext.Database.BeginTransactionAsync())
             {
-                Email = user.Email,
-                UserName = user.UserName,
-                PhoneNumber = user.PhoneNumber
-            };
+                try
+                {
+                    // Check If user already Exists In [Asp.NetUsers]
+                    var userExists = await _userManager.FindByEmailAsync(user.EmailAddress);
+                    if (userExists != null)
+                        return StatusCode(StatusCodes.Status500InternalServerError, new { Status = "Error", Message = "User already exists!" });
 
-            var result = await _userManager.CreateAsync(identityUser, user.Password);
+                    // Create a New User in [Asp.NetUsers]
+                    IdentityUser identityUser = new()
+                    {
+                        Email = user.EmailAddress,
+                        UserName = user.UserName,
+                        PhoneNumber = user.MobileNumber
+                    };
 
-            if (!result.Succeeded)
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Status = "Error", Message = string.Join(", ", result.Errors.Select(x => x.Description)) });
+                    User _user = new User()
+                    {
+                        EmailAddress = user.EmailAddress,
+                        UserName = user.UserName,
+                        MobileNumber = user.MobileNumber,
+                        Role = "Admin",
+                        Status = true
+                    };
 
-            // Assign the new user to the role
-            await _userManager.AddToRoleAsync(identityUser, "Admin");
+                    await _dbContext.Users.AddAsync(_user);
 
-            return Ok(new { Status = "Success", Message = "User registered successfully!" });
+                    var result = await _userManager.CreateAsync(identityUser, user.Password);
+
+                    if (!result.Succeeded)
+                        return StatusCode(StatusCodes.Status500InternalServerError, new { Status = "Error", Message = string.Join(", ", result.Errors.Select(x => x.Description)) });
+
+                    // Assign the new user to the role
+                    await _userManager.AddToRoleAsync(identityUser, "Admin");
+                    await transaction.CommitAsync();
+                    return Ok(new { Status = "Success", Message = "User registered successfully!" });
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return BadRequest("Error occured!");
+                }
+            }
         }
 
         [HttpPost("login")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody]User loginData)
+        public async Task<IActionResult> Login([FromBody] UserDto loginData)
         {
-            var user = await _userManager.FindByEmailAsync(loginData.Email);
+            var user = await _userManager.FindByEmailAsync(loginData.EmailAddress);
             if (user != null && await _userManager.CheckPasswordAsync(user, loginData.Password))
             {
                 // Fetch roles and user-specific information
@@ -65,6 +92,7 @@ namespace InfoMed.Controllers
                     new(ClaimTypes.Name, user.UserName),
                     new(ClaimTypes.NameIdentifier, user.Id),
                     new(ClaimTypes.Role, userRole!),
+                    new(ClaimTypes.Email,user.Email),
                     new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                 };
 
@@ -85,7 +113,7 @@ namespace InfoMed.Controllers
                     UserId = user.Id,
                     UserRole = userRole,
                     UserEmail = user.Email,
-                    UserName= user.UserName,
+                    UserName = user.UserName,
                 });
             }
 

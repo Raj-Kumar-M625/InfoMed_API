@@ -25,25 +25,33 @@ namespace InfoMed.Controllers
             return Ok(events);
         }
 
-        [HttpPost("AddEvent")]
-        public async Task<ActionResult<bool>> AddEvent(EventVersionDto _event)
+        [HttpGet("GetEventTypes")]
+        public async Task<ActionResult<List<EventTypeDto>>> GetEventTypes()
         {
-            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            var result = await _eventService.AddEvent(_event, userId);
-            if (result) return Ok(result);
+            var eventTypes = await _eventService.GetEventTypes();
+            return Ok(eventTypes);
+        }
+
+        [HttpPost("AddEvent")]
+        public async Task<ActionResult<EventVersionDto>> AddEvent(EventVersionDto _event)
+        {
+            var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            var result = await _eventService.AddEvent(_event, email!);
+            if (result != null) return Ok(result);
             return BadRequest("Error occured while creating!");
         }
 
         [HttpPost("UpdateEvent")]
-        public async Task<ActionResult<bool>> UpdateEvent(EventVersionDto _event)
+        public async Task<ActionResult<EventVersionDto>> UpdateEvent(EventVersionDto _event)
         {
-            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            var result = await _eventService.UpdateEvent(_event, userId);
-            if (result) return Ok(result);
+            var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            var result = await _eventService.UpdateEvent(_event, email!);
+            if (result != null) return Ok(result);
             return BadRequest("Error occured while updating!");
         }
 
         [HttpGet("GetEventById")]
+
         public async Task<ActionResult<EventVersionDto>> GetEventById(int id)
         {
             var _event = await _eventService.GetEventById(id);

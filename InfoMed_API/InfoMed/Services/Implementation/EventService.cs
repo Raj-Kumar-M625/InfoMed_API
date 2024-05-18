@@ -39,7 +39,7 @@ namespace InfoMed.Services.Implementation
         {
             try
             {
-                var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEvent == id);
+                var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEventVersion == id);
                 return _mapper.Map<EventVersionDto>(_event);
             }
             catch (Exception ex)
@@ -49,29 +49,52 @@ namespace InfoMed.Services.Implementation
             }
         }
 
-        public async Task<bool> AddEvent(EventVersionDto _event, string userId)
+        public async Task<EventVersionDto> AddEvent(EventVersionDto _event, string email)
         {
-            try
+            using (var transaction = await _dbContext.Database.BeginTransactionAsync())
             {
-                var newEvent = _mapper.Map<EventVersions>(_event);
-                newEvent.ModifiedDate = DateTime.Now;
-                newEvent.ModifiedBy = 1;
-                await _dbContext.EventVersions.AddAsync(newEvent);
-                await _dbContext.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _log.Error(ex.Message);
-                return false;
+                try
+                {
+                    var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.EmailAddress == email);
+                    EventsMaster eventsMaster = new EventsMaster()
+                    {
+                        EventMasterName = _event.EventName,
+                        CreatedBy = user!.IdUser,
+                        CreatedDate = DateTime.Now,
+                    };
+
+                    var result = await _dbContext.EventsMaster.AddAsync(eventsMaster);
+                    await _dbContext.SaveChangesAsync();
+
+                    var prevEvent = await _dbContext.EventVersions.OrderBy(x => x.IdEventVersion).LastOrDefaultAsync();
+
+                    var newEvent = _mapper.Map<EventVersions>(_event);
+                    newEvent.IdEvent = result.Entity.IdEvent;
+                    newEvent.IdVersion = prevEvent != null ? prevEvent.IdVersion + 1 : 1;
+
+                    var entity = await _dbContext.EventVersions.AddAsync(newEvent);
+                    await _dbContext.SaveChangesAsync();
+
+                    await transaction.CommitAsync();
+
+                    var mapEntity = _mapper.Map<EventVersionDto>(entity.Entity);
+                    return mapEntity;
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    _log.Error(ex.Message);
+                    return null;
+                }
             }
         }
 
-        public async Task<bool> UpdateEvent(EventVersionDto _event, string userId)
+        public async Task<EventVersionDto> UpdateEvent(EventVersionDto _event, string email)
         {
             try
             {
-                var dbObject = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEvent == _event.IdEvent);
+                var dbObject = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEventVersion == _event.IdEventVersion);
+                var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.EmailAddress == email);
                 if (dbObject != null)
                 {
                     dbObject.IdEvent = _event.IdEvent;
@@ -79,6 +102,7 @@ namespace InfoMed.Services.Implementation
                     dbObject.VersionStatus = _event.VersionStatus;
                     dbObject.EventWebPageName = _event.EventWebPageName;
                     dbObject.EventName = _event.EventName;
+                    dbObject.EventType = _event.EventType;
                     dbObject.VenueName = _event.VenueName;
                     dbObject.VenueAddress = _event.VenueAddress;
                     dbObject.VenueLatLong = _event.VenueLatLong;
@@ -95,17 +119,32 @@ namespace InfoMed.Services.Implementation
                     dbObject.EventEndDate = _event.EventEndDate;
                     dbObject.NoOfDays = _event.NoOfDays;
                     dbObject.ModifiedDate = DateTime.Now;
-                    dbObject.ModifiedBy = 1;
-                    _dbContext.EventVersions.Update(dbObject);
+                    dbObject.ModifiedBy = user!.IdUser;
+                    var entity = _dbContext.EventVersions.Update(dbObject);
                     await _dbContext.SaveChangesAsync();
-                    return true;
+                    var mapEntity = _mapper.Map<EventVersionDto>(entity.Entity);
+                    return mapEntity;
                 }
-                return false;
+                return null;
             }
             catch (Exception ex)
             {
                 _log.Error(ex.Message);
-                return false;
+                return null;
+            }
+        }
+
+        public async Task<List<EventTypeDto>> GetEventTypes()
+        {
+            try
+            {
+                var eventType = await _dbContext.EventType.ToListAsync();
+                return _mapper.Map<List<EventTypeDto>>(eventType);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                return null!;
             }
         }
     }

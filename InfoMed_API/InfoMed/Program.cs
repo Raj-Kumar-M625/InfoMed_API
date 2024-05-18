@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Reflection;
 using System.Text;
+using System.Xml;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +40,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<ITextContentAreasService, TextContentAreasService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAutoMapper(typeof(Program));
@@ -92,7 +95,13 @@ builder.Services.AddSwaggerGen(swagger =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+XmlDocument log4netConfig = new XmlDocument();
+log4netConfig.Load(File.OpenRead("log4net.config"));
 
+var repo = log4net.LogManager.CreateRepository(
+    Assembly.GetEntryAssembly(), typeof(log4net.Repository.Hierarchy.Hierarchy));
+
+log4net.Config.XmlConfigurator.Configure(repo, log4netConfig["log4net"]);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
