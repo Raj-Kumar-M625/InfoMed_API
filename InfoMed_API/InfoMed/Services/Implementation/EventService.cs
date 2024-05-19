@@ -34,6 +34,21 @@ namespace InfoMed.Services.Implementation
                 return null!;
             }
         }
+        public async Task<List<SponsersDto>> GetSponser(int eventId)
+        {
+            try
+            {
+                var events = await _dbContext.Sponsors .Where(x=>x.IdEvent==eventId && x.Status==true).OrderBy(x=>x.OrderNumber).ToListAsync();
+                return _mapper.Map<List<SponsersDto>>(events);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                return null!;
+            }
+        }
+
+        
 
         public async Task<EventVersionDto> GetEventById(int id)
         {
@@ -48,6 +63,20 @@ namespace InfoMed.Services.Implementation
                 return null!;
             }
         }
+        public async Task<SponsersDto> GetSponserById(int id)
+        {
+            try
+            {
+                var _event = await _dbContext.Sponsors.FirstOrDefaultAsync(x => x.IdEventSponsor == id);
+                return _mapper.Map<SponsersDto>(_event);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                return null!;
+            }
+        }
+        
 
         public async Task<EventVersionDto> AddEvent(EventVersionDto _event, string email)
         {
@@ -88,6 +117,22 @@ namespace InfoMed.Services.Implementation
                 }
             }
         }
+        public async Task<bool> AddSponser(SponsersDto _sponser, string userId)
+        {
+            try
+            {
+                var sponsers = _mapper.Map<Sponsers>(_sponser);               
+                await _dbContext.Sponsors.AddAsync(sponsers);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                return false;
+            }
+        }
+        
 
         public async Task<EventVersionDto> UpdateEvent(EventVersionDto _event, string email)
         {
@@ -147,5 +192,47 @@ namespace InfoMed.Services.Implementation
                 return null!;
             }
         }
+        public async Task<List<SponserTypeDto>> GetSponserTypes()
+        {
+            try
+            {
+                var sponserType = await _dbContext.SponserType.ToListAsync();
+                return _mapper.Map<List<SponserTypeDto>>(sponserType);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                return null!;
+            }
+        }
+        
+
+        public async Task<bool> UpdateSponser(SponsersDto _Sponser, string userId)
+        {
+            try
+            {
+                var dbObject = await _dbContext.Sponsors.FirstOrDefaultAsync(x => x.IdEventSponsor == _Sponser.IdEventSponsor);
+                if (dbObject != null)
+                {
+                    dbObject.IdEvent = _Sponser.IdEvent;
+                    dbObject.IdEventVersion = _Sponser.IdEventVersion;
+                    dbObject.SponsorType = _Sponser.SponsorType;
+                    dbObject.SponsorName = _Sponser.SponsorName;
+                    dbObject.SponsorShowText = _Sponser.SponsorShowText;
+                    dbObject.OrderNumber = _Sponser.OrderNumber;
+                    dbObject.Status = _Sponser.Status;                
+                    _dbContext.Sponsors.Update(dbObject);
+                    await _dbContext.SaveChangesAsync();
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                return false;
+            }
+        }
+        
     }
 }
