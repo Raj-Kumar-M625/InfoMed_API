@@ -21,23 +21,24 @@ namespace InfoMed.Services.Implementation
             _mapper = mapper;
         }
 
-        public async Task<bool> AddTextContent(TextContentAreasDto _textContent)
+        public async Task<TextContentAreasDto> AddTextContent(TextContentAreasDto _textContent)
         {
             try
             {
                 var textContent = _mapper.Map<TextContentAreas>(_textContent);
+                var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEventVersion == textContent.IdEventVersion);
+                if (_event != null) textContent.IdEvent = _event.IdEvent;
                 textContent.Status = true;
-                await _dbContext.TextContentAreas.AddAsync(textContent);
+                var entity = await _dbContext.TextContentAreas.AddAsync(textContent);
                 await _dbContext.SaveChangesAsync();
-                return true;
+                return _mapper.Map<TextContentAreasDto>(entity.Entity);
             }
             catch (Exception ex)
             {
                 _log.Error(ex.Message);
-                return false;
+                return null;
             }
         }
-
         public async Task<TextContentAreasDto> GetTextContentById(int id)
         {
             try
@@ -51,13 +52,12 @@ namespace InfoMed.Services.Implementation
                 return null!;
             }
         }
-
-        public async Task<List<TextContentAreasDto>> GetTextContents()
+        public async Task<TextContentAreasDto> GetTextContentByEventVersionId(int versionId)
         {
             try
             {
-                var textContents = await _dbContext.TextContentAreas.ToListAsync();
-                return _mapper.Map<List<TextContentAreasDto>>(textContents);
+                var textContent = await _dbContext.TextContentAreas.FirstOrDefaultAsync(x => x.IdEventVersion == versionId);
+                return _mapper.Map<TextContentAreasDto>(textContent);
             }
             catch (Exception ex)
             {
@@ -66,7 +66,20 @@ namespace InfoMed.Services.Implementation
             }
         }
 
-        public async Task<bool> UpdateTextContent(TextContentAreasDto _textContent)
+        public async Task<List<TextContentAreasDto>> GetTextContents()
+        {
+            try
+            {
+                var textContents = await _dbContext.TextContentAreas.Where(x => x.Status == true).ToListAsync();
+                return _mapper.Map<List<TextContentAreasDto>>(textContents);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                return null!;
+            }
+        }
+        public async Task<TextContentAreasDto> UpdateTextContent(TextContentAreasDto _textContent)
         {
             try
             {
@@ -76,17 +89,17 @@ namespace InfoMed.Services.Implementation
                     textContent.ContentHeader = _textContent.ContentHeader;
                     textContent.ContentText = _textContent.ContentText;
                     textContent.OrderNumber = _textContent.OrderNumber;
-                    textContent.Status = _textContent.Status;
-                    _dbContext.TextContentAreas.Update(textContent);
+                    textContent.Status = true;
+                    var entity = _dbContext.TextContentAreas.Update(textContent);
                     await _dbContext.SaveChangesAsync();
-                    return true;
+                    return _mapper.Map<TextContentAreasDto>(entity.Entity);
                 }
-                return false;
+                return null;
             }
             catch (Exception ex)
             {
                 _log.Error(ex.Message);
-                return false;
+                return null;
             }
         }
     }

@@ -28,10 +28,10 @@ namespace InfoMed.Controllers
         }
 
         [HttpPost("AddTextContent")]
-        public async Task<ActionResult<bool>> AddTextContent(TextContentAreasDto textContent)
+        public async Task<ActionResult<TextContentAreasDto>> AddTextContent(TextContentAreasDto textContent)
         {
             var result = await _textContentAreasService.AddTextContent(textContent);
-            if (result) return Ok(result);
+            if (result != null) return Ok(result);
             return BadRequest("Error occured while creating!");
         }
 
@@ -39,7 +39,7 @@ namespace InfoMed.Controllers
         public async Task<ActionResult<bool>> UpdateTextContent(TextContentAreasDto textContent)
         {
             var result = await _textContentAreasService.UpdateTextContent(textContent);
-            if (result) return Ok(result);
+            if (result != null) return Ok(result);
             return BadRequest("Error occured while updating!");
         }
 
@@ -50,6 +50,13 @@ namespace InfoMed.Controllers
             if (textContext != null) return Ok(textContext);
             return BadRequest("Error occured while fetching data!");
         }
+
+        [HttpGet("GetTextContentByEventVersionId")]
+        public async Task<ActionResult<EventVersionDto>> GetTextContentByEventVersionId(int versionId)
+        {
+            var textContext = await _textContentAreasService.GetTextContentByEventVersionId(versionId);
+            if (textContext != null) return Ok(textContext);
+            return BadRequest("Error occured while fetching data!");
+        }
     }
 }
-//tab version def 1+1 eve id drop down eve ver

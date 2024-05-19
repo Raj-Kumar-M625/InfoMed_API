@@ -97,8 +97,6 @@ namespace InfoMed.Services.Implementation
                 var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.EmailAddress == email);
                 if (dbObject != null)
                 {
-                    dbObject.IdEvent = _event.IdEvent;
-                    dbObject.IdVersion = _event.IdVersion;
                     dbObject.VersionStatus = _event.VersionStatus;
                     dbObject.EventWebPageName = _event.EventWebPageName;
                     dbObject.EventName = _event.EventName;

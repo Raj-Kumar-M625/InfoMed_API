@@ -13,11 +13,11 @@
         public string VenueAddress { get; set; }
         public string VenueLatLong { get; set; }
         public string EventHomeContent { get; set; }
-        public string FooterText { get; set; }
-        public string FacebookLink { get; set; }
-        public string TwitterLink { get; set; }
-        public string LinkedInLink { get; set; }
-        public string CopyrightText { get; set; }
+        public string? FooterText { get; set; }
+        public string? FacebookLink { get; set; }
+        public string? TwitterLink { get; set; }
+        public string? LinkedInLink { get; set; }
+        public string? CopyrightText { get; set; }
         public bool ShowHurryUpContent { get; set; }
         public int? ApprovedBy { get; set; }
         public DateTime? ApprovedDate { get; set; }
