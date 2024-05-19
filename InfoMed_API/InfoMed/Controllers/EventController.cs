@@ -85,6 +85,14 @@ namespace InfoMed.Controllers
             return BadRequest("Error occured while fetching data!");
         }
 
+        [HttpGet("DeleteSponsor")]
+        public async Task<ActionResult<bool>> DeleteSponsor(int id)
+        {
+            var _event = await _eventService.DeleteSponsor(id);
+            if (_event != null) return Ok(_event);
+            return BadRequest("Error occured while fetching data!");
+        }
+        
         [HttpGet("GetSponser")]
         public async Task<ActionResult<List<SponsersDto>>> GetSponser(int eventId)
         {

@@ -14,7 +14,8 @@ namespace InfoMed.Services.Interface
         public Task<EventVersionDto> GetEventById(int id);
         public Task<List<EventTypeDto>> GetEventTypes();
         public Task<List<SponserTypeDto>> GetSponserTypes();        
-        public Task<SponsersDto> GetSponserById(int id);        
+        public Task<SponsersDto> GetSponserById(int id);  
+        public Task<bool> DeleteSponsor(int id);
         public Task<bool> AddSponser(SponsersDto _sponser, string userId);
         
     }

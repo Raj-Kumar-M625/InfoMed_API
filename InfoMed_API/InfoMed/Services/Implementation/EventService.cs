@@ -220,6 +220,7 @@ namespace InfoMed.Services.Implementation
                     dbObject.SponsorName = _Sponser.SponsorName;
                     dbObject.SponsorShowText = _Sponser.SponsorShowText;
                     dbObject.OrderNumber = _Sponser.OrderNumber;
+                    dbObject.SponsorLogo =_Sponser.SponsorLogo;
                     dbObject.Status = _Sponser.Status;                
                     _dbContext.Sponsors.Update(dbObject);
                     await _dbContext.SaveChangesAsync();
@@ -233,6 +234,29 @@ namespace InfoMed.Services.Implementation
                 return false;
             }
         }
+
+        public async Task<bool> DeleteSponsor(int Id)
+        {
+            try
+            {
+                var dbObject = await _dbContext.Sponsors.FirstOrDefaultAsync(x => x.IdEventSponsor == Id);
+                if (dbObject != null)
+                {
+                    dbObject.Status = false;                    
+                    _dbContext.Sponsors.Update(dbObject);
+                    await _dbContext.SaveChangesAsync();
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                return false;
+            }
+        }
+
         
+
     }
 }
