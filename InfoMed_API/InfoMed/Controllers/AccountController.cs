@@ -80,14 +80,16 @@ namespace InfoMed.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] UserDto loginData)
         {
-            var user = await _userManager.FindByEmailAsync(loginData.EmailAddress);
-            if (user != null && await _userManager.CheckPasswordAsync(user, loginData.Password))
+            try
             {
-                // Fetch roles and user-specific information
-                var userRoles = await _userManager.GetRolesAsync(user);
-                var userRole = userRoles.FirstOrDefault();
+                var user = await _userManager.FindByEmailAsync(loginData.EmailAddress);
+                if (user != null && await _userManager.CheckPasswordAsync(user, loginData.Password))
+                {
+                    // Fetch roles and user-specific information
+                    var userRoles = await _userManager.GetRolesAsync(user);
+                    var userRole = userRoles.FirstOrDefault();
 
-                var authClaims = new List<Claim>
+                    var authClaims = new List<Claim>
                 {
                     new(ClaimTypes.Name, user.UserName),
                     new(ClaimTypes.NameIdentifier, user.Id),
@@ -96,28 +98,33 @@ namespace InfoMed.Controllers
                     new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                 };
 
-                var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Secret"]));
+                    var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Secret"]));
 
-                var token = new JwtSecurityToken(
-                _configuration["JwtSettings:ValidIssuer"],
-                _configuration["JwtSettings:ValidAudience"],
-                expires: DateTime.Now.AddDays(30),
-                claims: authClaims,
-                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-                );
+                    var token = new JwtSecurityToken(
+                    _configuration["JwtSettings:ValidIssuer"],
+                    _configuration["JwtSettings:ValidAudience"],
+                    expires: DateTime.Now.AddDays(30),
+                    claims: authClaims,
+                    signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+                    );
 
-                return Ok(new
-                {
-                    Token = new JwtSecurityTokenHandler().WriteToken(token),
-                    TokenExpiration = token.ValidTo,
-                    UserId = user.Id,
-                    UserRole = userRole,
-                    UserEmail = user.Email,
-                    UserName = user.UserName,
-                });
+                    return Ok(new
+                    {
+                        Token = new JwtSecurityTokenHandler().WriteToken(token),
+                        TokenExpiration = token.ValidTo,
+                        UserId = user.Id,
+                        UserRole = userRole,
+                        UserEmail = user.Email,
+                        UserName = user.UserName,
+                    });
+                }
+
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Status = "Error", Message = "User Not Found!" });
             }
-
-            return StatusCode(StatusCodes.Status500InternalServerError, new { Status = "Error", Message = "User Not Found!" });
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

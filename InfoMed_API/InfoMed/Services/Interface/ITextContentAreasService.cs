@@ -6,8 +6,9 @@ namespace InfoMed.Services.Interface
     public interface ITextContentAreasService
     {
         public Task<List<TextContentAreasDto>> GetTextContents();
-        public Task<bool> AddTextContent(TextContentAreasDto textContent);
-        public Task<bool> UpdateTextContent(TextContentAreasDto textContent);
+        public Task<TextContentAreasDto> AddTextContent(TextContentAreasDto textContent);
+        public Task<TextContentAreasDto> UpdateTextContent(TextContentAreasDto textContent);
         public Task<TextContentAreasDto> GetTextContentById(int id);
+        public Task<TextContentAreasDto> GetTextContentByEventVersionId(int VersionId);
     }
 }
