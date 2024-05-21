@@ -108,6 +108,51 @@ namespace InfoMed.Controllers
         }
 
 
+        [HttpGet("GetSpeakers")]
+        public async Task<ActionResult<List<SpeakersDto>>> GetSpeakers(int eventId)
+        {
+            var events = await _eventService.GetSpeakers(eventId);
+            return Ok(events);
+        }
+
+        [HttpGet("GetSpeakerById")]
+        public async Task<ActionResult<SpeakersDto>> GetSpeakerById(int id)
+        {
+            var _sponser = await _eventService.GetSpeakerById(id);
+            if (_sponser != null) return Ok(_sponser);
+            return BadRequest("Error occured while fetching data!");
+        }
+
+        [HttpPost("AddSpeaker")]
+        public async Task<ActionResult<bool>> AddSpeaker(SpeakersDto _speaker)
+        {
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var result = await _eventService.AddSpeaker(_speaker, userId);
+            if (result) return Ok(result);
+            return BadRequest("Error occured while creating!");
+        }
+
+        [HttpPost("UpdateSpeaker")]
+        public async Task<ActionResult<bool>> UpdateSpeaker(SpeakersDto _speaker)
+        {
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var result = await _eventService.UpdateSpeaker(_speaker, userId);
+            if (result) return Ok(result);
+            return BadRequest("Error occured while updating!");
+        }
+
+
+        [HttpGet("DeleteSpeaker")]
+        public async Task<ActionResult<bool>> DeleteSpeaker(int id)
+        {
+            var _event = await _eventService.DeleteSpeaker(id);
+            if (_event != null) return Ok(_event);
+            return BadRequest("Error occured while fetching data!");
+        }
+
+
+
+
     }
 }
         

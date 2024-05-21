@@ -13,6 +13,7 @@ namespace InfoMed.Utils
             CreateMap<EventVersions, EventVersionDto>().ReverseMap();
             CreateMap<TextContentAreas, TextContentAreasDto>().ReverseMap();
             CreateMap<Sponsers, SponsersDto>().ReverseMap();
+            CreateMap<Speakers, SpeakersDto>().ReverseMap();
             CreateMap<SponserType, SponserTypeDto>().ReverseMap();
         }
     }

@@ -48,7 +48,22 @@ namespace InfoMed.Services.Implementation
             }
         }
 
+        public async Task<List<SpeakersDto>> GetSpeakers(int eventId)
+        {
+            try
+            {
+                var events = await _dbContext.Speakers.Where(x => x.IdEvent == eventId && x.Status == true).OrderBy(x => x.OrderNumber).ToListAsync();
+                return _mapper.Map<List<SpeakersDto>>(events);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                return null!;
+            }
+        }
         
+
+
 
         public async Task<EventVersionDto> GetEventById(int id)
         {
@@ -67,7 +82,7 @@ namespace InfoMed.Services.Implementation
         {
             try
             {
-                var _event = await _dbContext.Sponsors.FirstOrDefaultAsync(x => x.IdEventSponsor == id);
+                var _event = await _dbContext.Speakers.FirstOrDefaultAsync(x => x.IdSpeaker == id);
                 return _mapper.Map<SponsersDto>(_event);
             }
             catch (Exception ex)
@@ -76,7 +91,20 @@ namespace InfoMed.Services.Implementation
                 return null!;
             }
         }
-        
+
+        public async Task<SpeakersDto> GetSpeakerById(int id)
+        {
+            try
+            {
+                var _event = await _dbContext.Speakers.FirstOrDefaultAsync(x => x.IdSpeaker == id);
+                return _mapper.Map<SpeakersDto>(_event);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                return null!;
+            }
+        }        
 
         public async Task<EventVersionDto> AddEvent(EventVersionDto _event, string email)
         {
@@ -132,7 +160,24 @@ namespace InfoMed.Services.Implementation
                 return false;
             }
         }
+
+        public async Task<bool> AddSpeaker(SpeakersDto _speaker, string userId)
+        {
+            try
+            {
+                var speakers = _mapper.Map<Speakers>(_speaker);
+                await _dbContext.Speakers.AddAsync(speakers);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                return false;
+            }
+        }
         
+
 
         public async Task<EventVersionDto> UpdateEvent(EventVersionDto _event, string email)
         {
@@ -233,6 +278,37 @@ namespace InfoMed.Services.Implementation
             }
         }
 
+
+        
+
+
+        public async Task<bool> UpdateSpeaker(SpeakersDto _speaker, string userId)
+        {
+            try
+            {
+                var dbObject = await _dbContext.Speakers.FirstOrDefaultAsync(x => x.IdSpeaker == _speaker.IdSpeaker);
+                if (dbObject != null)
+                {
+                    dbObject.IdEvent = _speaker.IdEvent;
+                    dbObject.IdEventVersion = _speaker.IdEventVersion;                    
+                    dbObject.SpeakerName = _speaker.SpeakerName;
+                    dbObject.AboutSpeaker = _speaker.AboutSpeaker;
+                    dbObject.OrderNumber = _speaker.OrderNumber;
+                    dbObject.SpeakerImage = _speaker.SpeakerImage;
+                    dbObject.Status = _speaker.Status;
+                    _dbContext.Speakers.Update(dbObject);
+                    await _dbContext.SaveChangesAsync();
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                return false;
+            }
+        }
+
         public async Task<bool> DeleteSponsor(int Id)
         {
             try
@@ -254,7 +330,29 @@ namespace InfoMed.Services.Implementation
             }
         }
 
+
+        public async Task<bool> DeleteSpeaker(int Id)
+        {
+            try
+            {
+                var dbObject = await _dbContext.Speakers.FirstOrDefaultAsync(x => x.IdSpeaker == Id);
+                if (dbObject != null)
+                {
+                    dbObject.Status = false;
+                    _dbContext.Speakers.Update(dbObject);
+                    await _dbContext.SaveChangesAsync();
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                return false;
+            }
+        }
         
+
 
     }
 }
