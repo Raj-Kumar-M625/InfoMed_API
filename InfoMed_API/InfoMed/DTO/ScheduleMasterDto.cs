@@ -8,5 +8,6 @@
         public DateTime ScheduleDate { get; set; }
         public string DayScheduleName { get; set; }
         public string? DayScheduleDetailsText { get; set; }
+        public bool IsActive { get; set; }
     }
 }

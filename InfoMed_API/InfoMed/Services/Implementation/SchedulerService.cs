@@ -25,7 +25,7 @@ namespace InfoMed.Services.Implementation
         {
             try
             {
-                var scheduleMaster = await _dbContext.ScheduleMaster.Where(x => x.IdEventVersion == IdEventVersion)
+                var scheduleMaster = await _dbContext.ScheduleMaster.Where(x => x.IdEventVersion == IdEventVersion && x.IsActive)
                                                                     .ToListAsync();
                 return _mapper.Map<List<ScheduleMasterDto>>(scheduleMaster);
             }
@@ -40,7 +40,7 @@ namespace InfoMed.Services.Implementation
         {
             try
             {
-                var scheduleDetails = await _dbContext.ScheduleDetails.Where(x => x.IdScheduleMaster == IdScheduleMaster) 
+                var scheduleDetails = await _dbContext.ScheduleDetails.Where(x => x.IdScheduleMaster == IdScheduleMaster && x.IsActive) 
                                                                       .ToListAsync();
                 return _mapper.Map<List<ScheduleDetailsDto>>(scheduleDetails);
             }
@@ -111,6 +111,7 @@ namespace InfoMed.Services.Implementation
                     scheduleMaster.ScheduleDate = scheduleMasterDto.ScheduleDate;
                     scheduleMaster.DayScheduleName = scheduleMasterDto.DayScheduleName;
                     scheduleMaster.DayScheduleDetailsText = scheduleMasterDto.DayScheduleDetailsText;
+                    scheduleMaster.IsActive = scheduleMasterDto.IsActive;
                     var scheduleMasterEntity = _dbContext.ScheduleMaster.Update(scheduleMaster);
                     await _dbContext.SaveChangesAsync();
                     return _mapper.Map<ScheduleMasterDto>(scheduleMasterEntity.Entity);
@@ -135,6 +136,7 @@ namespace InfoMed.Services.Implementation
                     scheduleDetails.StartTime = scheduleDetailsDto.StartTime;
                     scheduleDetails.EndTime = scheduleDetailsDto.EndTime;
                     scheduleDetails.Topic = scheduleDetailsDto.Topic;
+                    scheduleDetails.IsActive = scheduleDetailsDto.IsActive;
                     var scheduleDetailsEntity = _dbContext.ScheduleDetails.Update(scheduleDetails);
                     await _dbContext.SaveChangesAsync();
                     return _mapper.Map<ScheduleDetailsDto>(scheduleDetailsEntity.Entity);
