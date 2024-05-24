@@ -16,6 +16,8 @@ namespace InfoMed.Data
         public DbSet<EventsMaster> EventsMaster { get; set; }
         public DbSet<TextContentAreas> TextContentAreas { get; set; }
         public DbSet<EventType> EventType { get; set; }
+        public DbSet<ScheduleMaster> ScheduleMaster { get; set; }
+        public DbSet<ScheduleDetails> ScheduleDetails { get; set; }
         public DbSet<SponserType> SponserType { get; set; }
         public DbSet<Sponsers> Sponsors { get; set; }
     }

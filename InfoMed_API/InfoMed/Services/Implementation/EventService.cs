@@ -34,6 +34,7 @@ namespace InfoMed.Services.Implementation
                 return null!;
             }
         }
+
         public async Task<List<SponsersDto>> GetSponser(int eventId)
         {
             try
@@ -47,8 +48,6 @@ namespace InfoMed.Services.Implementation
                 return null!;
             }
         }
-
-        
 
         public async Task<EventVersionDto> GetEventById(int id)
         {

@@ -52,12 +52,14 @@ namespace InfoMed.Services.Implementation
                 return null!;
             }
         }
-        public async Task<TextContentAreasDto> GetTextContentByEventVersionId(int versionId)
+        public async Task<List<TextContentAreasDto>> GetTextContentByEventVersionId(int versionId)
         {
             try
             {
-                var textContent = await _dbContext.TextContentAreas.FirstOrDefaultAsync(x => x.IdEventVersion == versionId);
-                return _mapper.Map<TextContentAreasDto>(textContent);
+                var textContent = await _dbContext.TextContentAreas
+                                                  .Where(x => x.IdEventVersion == versionId && x.Status == true)
+                                                  .ToListAsync();
+                return _mapper.Map<List<TextContentAreasDto>>(textContent);
             }
             catch (Exception ex)
             {
@@ -89,17 +91,17 @@ namespace InfoMed.Services.Implementation
                     textContent.ContentHeader = _textContent.ContentHeader;
                     textContent.ContentText = _textContent.ContentText;
                     textContent.OrderNumber = _textContent.OrderNumber;
-                    textContent.Status = true;
+                    textContent.Status = _textContent.Status;
                     var entity = _dbContext.TextContentAreas.Update(textContent);
                     await _dbContext.SaveChangesAsync();
                     return _mapper.Map<TextContentAreasDto>(entity.Entity);
                 }
-                return null;
+                return null!;
             }
             catch (Exception ex)
             {
                 _log.Error(ex.Message);
-                return null;
+                return null!;
             }
         }
     }

@@ -44,7 +44,7 @@ namespace InfoMed.Controllers
         }
 
         [HttpGet("GetTextContentById")]
-        public async Task<ActionResult<EventVersionDto>> GetTextContentById(int id)
+        public async Task<ActionResult<TextContentAreasDto>> GetTextContentById(int id)
         {
             var textContext = await _textContentAreasService.GetTextContentById(id);
             if (textContext != null) return Ok(textContext);
@@ -52,7 +52,7 @@ namespace InfoMed.Controllers
         }
 
         [HttpGet("GetTextContentByEventVersionId")]
-        public async Task<ActionResult<EventVersionDto>> GetTextContentByEventVersionId(int versionId)
+        public async Task<ActionResult<List<TextContentAreasDto>>> GetTextContentByEventVersionId(int versionId)
         {
             var textContext = await _textContentAreasService.GetTextContentByEventVersionId(versionId);
             if (textContext != null) return Ok(textContext);

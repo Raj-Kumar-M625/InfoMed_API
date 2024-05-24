@@ -9,6 +9,6 @@ namespace InfoMed.Services.Interface
         public Task<TextContentAreasDto> AddTextContent(TextContentAreasDto textContent);
         public Task<TextContentAreasDto> UpdateTextContent(TextContentAreasDto textContent);
         public Task<TextContentAreasDto> GetTextContentById(int id);
-        public Task<TextContentAreasDto> GetTextContentByEventVersionId(int VersionId);
+        public Task<List<TextContentAreasDto>> GetTextContentByEventVersionId(int VersionId);
     }
 }

@@ -41,6 +41,7 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<ITextContentAreasService, TextContentAreasService>();
+builder.Services.AddScoped<ISchedulerService, SchedulerService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAutoMapper(typeof(Program));
