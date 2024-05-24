@@ -20,5 +20,6 @@ namespace InfoMed.Data
         public DbSet<ScheduleDetails> ScheduleDetails { get; set; }
         public DbSet<SponserType> SponserType { get; set; }
         public DbSet<Sponsers> Sponsors { get; set; }
+        public DbSet<Speakers> Speakers { get; set; }
     }
 }
