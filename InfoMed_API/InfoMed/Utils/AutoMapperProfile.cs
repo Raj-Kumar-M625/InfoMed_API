@@ -17,6 +17,8 @@ namespace InfoMed.Utils
             CreateMap<SponserType, SponserTypeDto>().ReverseMap();
             CreateMap<ScheduleDetails, ScheduleDetailsDto>().ReverseMap();
             CreateMap<ScheduleMaster, ScheduleMasterDto>().ReverseMap();
+            CreateMap<ConferenceFees, ConferenceFeeDto>().ReverseMap();
+
         }
     }
 }
