@@ -24,7 +24,7 @@ namespace InfoMed.Services.Implementation
         {
             try
             {
-                var events = await _dbContext.ConferenceFees.Where(x=>x.IdEvent == eventId).ToListAsync();
+                var events = await _dbContext.ConferenceFees.Where(x=>x.IdEvent == eventId).OrderBy(x=>x.OrderNumber).Where(x=>x.IsActive==true).ToListAsync();
                 return _mapper.Map<List<ConferenceFeeDto>>(events);
             }
             catch (Exception ex)
