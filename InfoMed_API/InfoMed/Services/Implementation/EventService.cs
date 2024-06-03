@@ -83,7 +83,7 @@ namespace InfoMed.Services.Implementation
         {
             try
             {
-                var _event = await _dbContext.Speakers.FirstOrDefaultAsync(x => x.IdSpeaker == id);
+                var _event = await _dbContext.Sponsors.FirstOrDefaultAsync(x => x.IdEventSponsor == id);
                 return _mapper.Map<SponsersDto>(_event);
             }
             catch (Exception ex)
