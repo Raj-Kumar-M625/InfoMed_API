@@ -22,5 +22,7 @@ namespace InfoMed.Data
         public DbSet<Sponsers> Sponsors { get; set; }
         public DbSet<Speakers> Speakers { get; set; }
         public DbSet<ConferenceFees> ConferenceFees { get; set; }
+        public DbSet<LastYearMemory> LastYearMemories { get; set; }
+        public DbSet<LastYearMemoryDetail> LastYearMemoryDetails { get; set; }
     }
 }
