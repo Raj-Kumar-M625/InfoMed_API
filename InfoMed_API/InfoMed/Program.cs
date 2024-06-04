@@ -40,7 +40,9 @@ builder.Services.AddAuthentication(options =>
     };
 });
 builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<IFeesService, FeesService>();
 builder.Services.AddScoped<ITextContentAreasService, TextContentAreasService>();
+builder.Services.AddScoped<ILastYearMemoriesService, LastYearMemoriesService>();
 builder.Services.AddScoped<ISchedulerService, SchedulerService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
