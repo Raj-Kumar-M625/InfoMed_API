@@ -116,6 +116,7 @@ namespace InfoMed.Controllers
                         UserRole = userRole,
                         UserEmail = user.Email,
                         UserName = user.UserName,
+                        LoginTime = DateTime.Now
                     });
                 }
 
