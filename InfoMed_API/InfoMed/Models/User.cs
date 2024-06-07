@@ -30,6 +30,6 @@ namespace InfoMed.Models
         public bool Status { get; set; }
 
         [NotMapped]
-        public string Password { get; set; }
+        public string? Password { get; set; }
     }
 }
