@@ -43,7 +43,7 @@ namespace InfoMed.Controllers
         }
 
 
-        [HttpPost("GetUserRoles")]
+        [HttpGet("GetUserRoles")]
         public async Task<IActionResult> GetUserRoles()
         {
             var roles = await _roleManager.Roles.ToListAsync();
