@@ -78,8 +78,7 @@ namespace InfoMed.Services.Implementation
                     lastYearMemory.LastYearMemoryText = LastYearMemoryDto.LastYearMemoryText;
                     lastYearMemory.Status = LastYearMemoryDto.Status;
                     lastYearMemory.LastYearMemoryDetail.OrderNumber = LastYearMemoryDto.LastYearMemoryDetail.OrderNumber;
-                    lastYearMemory.LastYearMemoryDetail.MediaShortDesc = LastYearMemoryDto.LastYearMemoryDetail.MediaShortDesc;
-                    lastYearMemory.LastYearMemoryDetail.MediaContent = LastYearMemoryDto.LastYearMemoryDetail.MediaContent;
+                    lastYearMemory.LastYearMemoryDetail.MediaShortDesc = LastYearMemoryDto.LastYearMemoryDetail.MediaShortDesc;                   
                     lastYearMemory.LastYearMemoryDetail.MediaType = LastYearMemoryDto.LastYearMemoryDetail.MediaType;
                     var lastYearMemoryEntity = _dbContext.LastYearMemories.Update(lastYearMemory);
                     var lastYearMemoryDetailsEntity = _dbContext.LastYearMemoryDetails.Update(lastYearMemory.LastYearMemoryDetail);
