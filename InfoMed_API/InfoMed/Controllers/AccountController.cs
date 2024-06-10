@@ -5,6 +5,7 @@ using log4net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -82,8 +83,9 @@ namespace InfoMed.Controllers
         {
             try
             {
+                var isActiveUser = await _dbContext.Users.FirstOrDefaultAsync(x => x.EmailAddress.Trim() == loginData.EmailAddress.Trim());
                 var user = await _userManager.FindByEmailAsync(loginData.EmailAddress);
-                if (user != null && await _userManager.CheckPasswordAsync(user, loginData.Password))
+                if (user != null && isActiveUser?.Status == true && await _userManager.CheckPasswordAsync(user, loginData.Password))
                 {
                     // Fetch roles and user-specific information
                     var userRoles = await _userManager.GetRolesAsync(user);
