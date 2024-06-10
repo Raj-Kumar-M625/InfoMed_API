@@ -66,7 +66,8 @@ namespace InfoMed.Controllers
             var result = await _eventService.AddSponser(_sponser, userId);
             if (result) return Ok(result);
             return BadRequest("Error occured while creating!");
-        }
+        }        
+
 
         [HttpPost("UpdateSponser")]
         public async Task<ActionResult<bool>> UpdateSponser(SponsersDto _sponser)
