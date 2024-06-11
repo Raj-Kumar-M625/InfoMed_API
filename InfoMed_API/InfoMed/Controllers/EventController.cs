@@ -52,9 +52,9 @@ namespace InfoMed.Controllers
 
         [HttpGet("GetEventById")]
 
-        public async Task<ActionResult<EventVersionDto>> GetEventById(int id)
+        public async Task<ActionResult<EventVersionDto>> GetEventById(int id, int idVersion)
         {
-            var _event = await _eventService.GetEventById(id);
+            var _event = await _eventService.GetEventById(id, idVersion);
             if (_event != null) return Ok(_event);
             return BadRequest("Error occured while fetching data!");
         }
@@ -95,9 +95,9 @@ namespace InfoMed.Controllers
         }
         
         [HttpGet("GetSponser")]
-        public async Task<ActionResult<List<SponsersDto>>> GetSponser(int eventId)
+        public async Task<ActionResult<List<SponsersDto>>> GetSponser(int id, int idVersion)
         {
-            var events = await _eventService.GetSponser(eventId);
+            var events = await _eventService.GetSponser(id,idVersion);
             return Ok(events);
         }
 
@@ -110,9 +110,9 @@ namespace InfoMed.Controllers
 
 
         [HttpGet("GetSpeakers")]
-        public async Task<ActionResult<List<SpeakersDto>>> GetSpeakers(int eventId)
+        public async Task<ActionResult<List<SpeakersDto>>> GetSpeakers(int id, int idVersion)
         {
-            var events = await _eventService.GetSpeakers(eventId);
+            var events = await _eventService.GetSpeakers(id,idVersion);
             return Ok(events);
         }
 

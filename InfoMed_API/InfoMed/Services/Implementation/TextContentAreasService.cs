@@ -26,8 +26,8 @@ namespace InfoMed.Services.Implementation
             try
             {
                 var textContent = _mapper.Map<TextContentAreas>(_textContent);
-                var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEventVersion == textContent.IdEventVersion);
-                if (_event != null) textContent.IdEvent = _event.IdEvent;
+                //var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEventVersion == textContent.IdEventVersion);
+                //if (_event != null) textContent.IdEvent = _event.IdEvent;
                 textContent.Status = true;
                 var entity = await _dbContext.TextContentAreas.AddAsync(textContent);
                 await _dbContext.SaveChangesAsync();
@@ -52,12 +52,12 @@ namespace InfoMed.Services.Implementation
                 return null!;
             }
         }
-        public async Task<List<TextContentAreasDto>> GetTextContentByEventVersionId(int versionId)
+        public async Task<List<TextContentAreasDto>> GetTextContentByEventVersionId(int id, int idVersion)
         {
             try
             {
                 var textContent = await _dbContext.TextContentAreas
-                                                  .Where(x => x.IdEventVersion == versionId && x.Status == true)
+                                                  .Where(x => x.IdEvent == id && x.IdEventVersion == idVersion && x.Status == true)
                                                   .ToListAsync();
                 return _mapper.Map<List<TextContentAreasDto>>(textContent);
             }

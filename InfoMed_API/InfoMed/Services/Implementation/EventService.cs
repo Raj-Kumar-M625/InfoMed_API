@@ -35,11 +35,11 @@ namespace InfoMed.Services.Implementation
             }
         }
 
-        public async Task<List<SponsersDto>> GetSponser(int eventId)
+        public async Task<List<SponsersDto>> GetSponser(int id, int idVersion)
         {
             try
             {
-                var events = await _dbContext.Sponsors .Where(x=>x.IdEvent==eventId && x.Status==true).OrderBy(x=>x.OrderNumber).ToListAsync();
+                var events = await _dbContext.Sponsors .Where(x=>x.IdEvent== id && x.IdEventVersion == idVersion && x.Status==true).OrderBy(x=>x.OrderNumber).ToListAsync();
                 return _mapper.Map<List<SponsersDto>>(events);
             }
             catch (Exception ex)
@@ -49,11 +49,11 @@ namespace InfoMed.Services.Implementation
             }
         }
 
-        public async Task<List<SpeakersDto>> GetSpeakers(int eventId)
+        public async Task<List<SpeakersDto>> GetSpeakers(int id, int idVersion)
         {
             try
             {
-                var events = await _dbContext.Speakers.Where(x => x.IdEvent == eventId && x.Status == true).OrderBy(x => x.OrderNumber).ToListAsync();
+                var events = await _dbContext.Speakers.Where(x => x.IdEvent == id && x.IdEventVersion ==idVersion  && x.Status == true).OrderBy(x => x.OrderNumber).ToListAsync();
                 return _mapper.Map<List<SpeakersDto>>(events);
             }
             catch (Exception ex)
@@ -66,11 +66,11 @@ namespace InfoMed.Services.Implementation
 
 
 
-        public async Task<EventVersionDto> GetEventById(int id)
+        public async Task<EventVersionDto> GetEventById(int id, int idVersion)
         {
             try
             {
-                var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEventVersion == id);
+                var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdVersion == idVersion && x.IdEvent == id);
                 return _mapper.Map<EventVersionDto>(_event);
             }
             catch (Exception ex)
@@ -124,11 +124,11 @@ namespace InfoMed.Services.Implementation
                     var result = await _dbContext.EventsMaster.AddAsync(eventsMaster);
                     await _dbContext.SaveChangesAsync();
 
-                    var prevEvent = await _dbContext.EventVersions.OrderBy(x => x.IdEventVersion).LastOrDefaultAsync();
+                    //var prevEvent = await _dbContext.EventVersions.OrderBy(x => x.IdEventVersion).LastOrDefaultAsync();
 
                     var newEvent = _mapper.Map<EventVersions>(_event);
                     newEvent.IdEvent = result.Entity.IdEvent;
-                    newEvent.IdVersion = prevEvent != null ? prevEvent.IdVersion + 1 : 1;
+                    newEvent.IdVersion =  1;
 
                     var entity = await _dbContext.EventVersions.AddAsync(newEvent);
                     await _dbContext.SaveChangesAsync();

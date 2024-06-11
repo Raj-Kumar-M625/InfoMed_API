@@ -20,9 +20,9 @@ namespace InfoMed.Controllers
         }
 
         [HttpGet("GetLastYearMemoriesList")]
-        public async Task<ActionResult<List<LastYearMemoryDto>>> GetLastYearMemoriesList(int eventId)
+        public async Task<ActionResult<List<LastYearMemoryDto>>> GetLastYearMemoriesList(int id, int idVersion)
         {
-            var events = await _lastYearMemories.GetLastYearMemoriesList(eventId);
+            var events = await _lastYearMemories.GetLastYearMemoriesList(id,idVersion);
             return Ok(events);
         }
 

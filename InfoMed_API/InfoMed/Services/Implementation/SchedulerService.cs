@@ -21,11 +21,11 @@ namespace InfoMed.Services.Implementation
             _mapper = mapper;
         }
 
-        public async Task<List<ScheduleMasterDto>> GetSchedulesMaster(int IdEventVersion)
+        public async Task<List<ScheduleMasterDto>> GetSchedulesMaster(int id, int idVersion)
         {
             try
             {
-                var scheduleMaster = await _dbContext.ScheduleMaster.Where(x => x.IdEventVersion == IdEventVersion && x.IsActive)
+                var scheduleMaster = await _dbContext.ScheduleMaster.Where(x => x.IdEvent == id && x.IdEventVersion == idVersion && x.IsActive)
                                                                     .ToListAsync();
                 return _mapper.Map<List<ScheduleMasterDto>>(scheduleMaster);
             }
@@ -56,8 +56,8 @@ namespace InfoMed.Services.Implementation
             try
             {
                 ScheduleMaster scheduleMaster = _mapper.Map<ScheduleMaster>(ScheduleMasterDto);
-                var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEventVersion == ScheduleMasterDto.IdEventVersion);
-                if (_event != null) scheduleMaster.IdEvent = _event.IdEvent;
+                //var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEventVersion == ScheduleMasterDto.IdEventVersion);
+                //if (_event != null) scheduleMaster.IdEvent = _event.IdEvent;
                 var ScheduleMasterEntity = await _dbContext.ScheduleMaster.AddAsync(scheduleMaster);
                 await _dbContext.SaveChangesAsync();
                 return _mapper.Map<ScheduleMasterDto>(ScheduleMasterEntity.Entity);
