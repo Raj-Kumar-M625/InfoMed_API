@@ -16,6 +16,7 @@ namespace InfoMed.Services.Interface
         public Task<List<EventTypeDto>> GetEventTypes();
         public Task<List<SponserTypeDto>> GetSponserTypes();        
         public Task<SponsersDto> GetSponserById(int id);  
+        public Task<int> EventVersionCreate(int id, string userId);  
         public Task<SpeakersDto> GetSpeakerById(int id);  
         public Task<bool> DeleteSponsor(int id);
         public Task<bool> DeleteSpeaker(int id);

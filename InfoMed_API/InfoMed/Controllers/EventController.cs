@@ -86,6 +86,16 @@ namespace InfoMed.Controllers
             return BadRequest("Error occured while fetching data!");
         }
 
+        [HttpPost("EventVersionCreate")]
+        public async Task<ActionResult<int>> EventVersionCreate(int id)
+        {
+            var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            var _event = await _eventService.EventVersionCreate(id, email!);
+            if (_event != 0) return Ok(_event);
+            return BadRequest("Error occured while fetching data!");
+        }
+        
+
         [HttpGet("DeleteSponsor")]
         public async Task<ActionResult<bool>> DeleteSponsor(int id)
         {

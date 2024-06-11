@@ -4,6 +4,7 @@ using InfoMed.DTO;
 using InfoMed.Models;
 using InfoMed.Services.Interface;
 using log4net;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -70,7 +71,7 @@ namespace InfoMed.Services.Implementation
         {
             try
             {
-                var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdVersion == idVersion && x.IdEvent == id);
+                var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEventVersion == idVersion && x.IdEvent == id);
                 return _mapper.Map<EventVersionDto>(_event);
             }
             catch (Exception ex)
@@ -92,6 +93,54 @@ namespace InfoMed.Services.Implementation
                 return null!;
             }
         }
+
+        public async Task<int> EventVersionCreate(int id, string email)
+        {
+            try
+            {
+                int newEventVersionId;
+                var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.EmailAddress == email);
+                var userid = user!.IdUser;
+                var commandText = "EXEC [dbo].[CreateNewDraftVersionOfEvent] @IdEvent, @IdUser";
+
+                using (var connection = _dbContext.Database.GetDbConnection())
+                {
+                    await connection.OpenAsync();
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = commandText;
+                        command.Parameters.Add(new SqlParameter("@IdEvent", id));
+                        command.Parameters.Add(new SqlParameter("@IdUser", userid));
+
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                newEventVersionId = reader.GetInt32(0);
+                            }
+                            else
+                            {
+                                newEventVersionId = 0; // handle error or default value
+                            }
+                        }
+                    }
+                }
+                //var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEventVersion == newEventVersionId);
+                //    if (_event != null)
+                //{
+                //    newEventVersionId = _event.IdVersion;
+                //}
+                return newEventVersionId;
+
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                return 0!;
+            }
+        }
+
+        
 
         public async Task<SpeakersDto> GetSpeakerById(int id)
         {

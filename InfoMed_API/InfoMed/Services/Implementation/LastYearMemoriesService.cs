@@ -44,10 +44,11 @@ namespace InfoMed.Services.Implementation
                     LastYearMemory lastYearMemory = _mapper.Map<LastYearMemory>(lastYeatMemoryDto);
                     //var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEvent == lastYeatMemoryDto.IdEventVersion);
                     //if (_event != null) lastYearMemory.IdEvent = _event.IdEvent;
+                    lastYearMemory.LastYearMemoryDetail = null;
                     var lastYearMemoryEntity = await _dbContext.LastYearMemories.AddAsync(lastYearMemory);
                     await _dbContext.SaveChangesAsync();
-                    int lastYearMemoryId = lastYearMemoryEntity.Entity.IdLastYearMemory;                 
-                    lastYearMemory.LastYearMemoryDetail.IdLastYearMemory = lastYearMemoryId;
+                    int lastYearMemoryId = lastYearMemoryEntity.Entity.IdLastYearMemory;
+                    lastYeatMemoryDto.LastYearMemoryDetail.IdLastYearMemory = lastYearMemoryId;
                     var newEvent = _mapper.Map<LastYearMemoryDetail>(lastYeatMemoryDto.LastYearMemoryDetail);
                     newEvent.IdLastYearMemory = lastYearMemoryId;
                         var entity = await _dbContext.LastYearMemoryDetails.AddAsync(newEvent);
