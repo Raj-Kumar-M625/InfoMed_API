@@ -258,6 +258,11 @@ namespace InfoMed.Services.Implementation
                     dbObject.NoOfDays = _event.NoOfDays;
                     dbObject.ModifiedDate = DateTime.Now;
                     dbObject.ModifiedBy = user!.IdUser;
+                    if(_event.VersionStatus== "Approved")
+                    {
+                        dbObject.ApprovedBy = user!.IdUser;
+                        dbObject.ApprovedDate =DateTime.Now;
+                    }
                     var entity = _dbContext.EventVersions.Update(dbObject);
                     await _dbContext.SaveChangesAsync();
                     var mapEntity = _mapper.Map<EventVersionDto>(entity.Entity);

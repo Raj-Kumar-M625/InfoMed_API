@@ -45,6 +45,7 @@ builder.Services.AddScoped<ITextContentAreasService, TextContentAreasService>();
 builder.Services.AddScoped<ILastYearMemoriesService, LastYearMemoriesService>();
 builder.Services.AddScoped<ISchedulerService, SchedulerService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAutoMapper(typeof(Program));

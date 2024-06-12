@@ -20,6 +20,7 @@ namespace InfoMed.Utils
             CreateMap<ConferenceFees, ConferenceFeeDto>().ReverseMap();
             CreateMap<LastYearMemory, LastYearMemoryDto>().ReverseMap();
             CreateMap<LastYearMemoryDetail, LastYearMemoryDetailDto>().ReverseMap();
+            CreateMap<PaymentDetails, PaymentDetailsDto>().ReverseMap();
 
         }
     }
