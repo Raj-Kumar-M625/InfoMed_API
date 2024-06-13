@@ -4,6 +4,7 @@ using InfoMed.DTO;
 using InfoMed.Models;
 using InfoMed.Services.Interface;
 using log4net;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -35,11 +36,11 @@ namespace InfoMed.Services.Implementation
             }
         }
 
-        public async Task<List<SponsersDto>> GetSponser(int eventId)
+        public async Task<List<SponsersDto>> GetSponser(int id, int idVersion)
         {
             try
             {
-                var events = await _dbContext.Sponsors.Where(x => x.IdEvent == eventId && x.Status == true).OrderBy(x => x.OrderNumber).ToListAsync();
+                var events = await _dbContext.Sponsors .Where(x=>x.IdEvent== id && x.IdEventVersion == idVersion && x.Status==true).OrderBy(x=>x.OrderNumber).ToListAsync();
                 return _mapper.Map<List<SponsersDto>>(events);
             }
             catch (Exception ex)
@@ -49,11 +50,11 @@ namespace InfoMed.Services.Implementation
             }
         }
 
-        public async Task<List<SpeakersDto>> GetSpeakers(int eventId)
+        public async Task<List<SpeakersDto>> GetSpeakers(int id, int idVersion)
         {
             try
             {
-                var events = await _dbContext.Speakers.Where(x => x.IdEvent == eventId && x.Status == true).OrderBy(x => x.OrderNumber).ToListAsync();
+                var events = await _dbContext.Speakers.Where(x => x.IdEvent == id && x.IdEventVersion ==idVersion  && x.Status == true).OrderBy(x => x.OrderNumber).ToListAsync();
                 return _mapper.Map<List<SpeakersDto>>(events);
             }
             catch (Exception ex)
@@ -62,12 +63,15 @@ namespace InfoMed.Services.Implementation
                 return null!;
             }
         }
+        
 
-        public async Task<EventVersionDto> GetEventById(int id)
+
+
+        public async Task<EventVersionDto> GetEventById(int id, int idVersion)
         {
             try
             {
-                var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEventVersion == id);
+                var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEventVersion == idVersion && x.IdEvent == id);
                 return _mapper.Map<EventVersionDto>(_event);
             }
             catch (Exception ex)
@@ -90,6 +94,54 @@ namespace InfoMed.Services.Implementation
                 return null!;
             }
         }
+
+        public async Task<int> EventVersionCreate(int id, string email)
+        {
+            try
+            {
+                int newEventVersionId;
+                var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.EmailAddress == email);
+                var userid = user!.IdUser;
+                var commandText = "EXEC [dbo].[CreateNewDraftVersionOfEvent] @IdEvent, @IdUser";
+
+                using (var connection = _dbContext.Database.GetDbConnection())
+                {
+                    await connection.OpenAsync();
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = commandText;
+                        command.Parameters.Add(new SqlParameter("@IdEvent", id));
+                        command.Parameters.Add(new SqlParameter("@IdUser", userid));
+
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                newEventVersionId = reader.GetInt32(0);
+                            }
+                            else
+                            {
+                                newEventVersionId = 0; // handle error or default value
+                            }
+                        }
+                    }
+                }
+                //var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEventVersion == newEventVersionId);
+                //    if (_event != null)
+                //{
+                //    newEventVersionId = _event.IdVersion;
+                //}
+                return newEventVersionId;
+
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                return 0!;
+            }
+        }
+
+        
 
         public async Task<SpeakersDto> GetSpeakerById(int id)
         {
@@ -122,11 +174,11 @@ namespace InfoMed.Services.Implementation
                     var result = await _dbContext.EventsMaster.AddAsync(eventsMaster);
                     await _dbContext.SaveChangesAsync();
 
-                    var prevEvent = await _dbContext.EventVersions.OrderBy(x => x.IdEventVersion).LastOrDefaultAsync();
+                    //var prevEvent = await _dbContext.EventVersions.OrderBy(x => x.IdEventVersion).LastOrDefaultAsync();
 
                     var newEvent = _mapper.Map<EventVersions>(_event);
                     newEvent.IdEvent = result.Entity.IdEvent;
-                    newEvent.IdVersion = prevEvent != null ? prevEvent.IdVersion + 1 : 1;
+                    newEvent.IdVersion =  1;
 
                     var entity = await _dbContext.EventVersions.AddAsync(newEvent);
                     await _dbContext.SaveChangesAsync();
@@ -207,6 +259,11 @@ namespace InfoMed.Services.Implementation
                     dbObject.NoOfDays = _event.NoOfDays;
                     dbObject.ModifiedDate = DateTime.Now;
                     dbObject.ModifiedBy = user!.IdUser;
+                    if(_event.VersionStatus== "Approved")
+                    {
+                        dbObject.ApprovedBy = user!.IdUser;
+                        dbObject.ApprovedDate =DateTime.Now;
+                    }
                     var entity = _dbContext.EventVersions.Update(dbObject);
                     await _dbContext.SaveChangesAsync();
                     var mapEntity = _mapper.Map<EventVersionDto>(entity.Entity);

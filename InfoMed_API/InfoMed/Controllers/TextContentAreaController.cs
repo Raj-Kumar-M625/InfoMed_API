@@ -52,9 +52,9 @@ namespace InfoMed.Controllers
         }
 
         [HttpGet("GetTextContentByEventVersionId")]
-        public async Task<ActionResult<List<TextContentAreasDto>>> GetTextContentByEventVersionId(int versionId)
+        public async Task<ActionResult<List<TextContentAreasDto>>> GetTextContentByEventVersionId(int id, int idVersion)
         {
-            var textContext = await _textContentAreasService.GetTextContentByEventVersionId(versionId);
+            var textContext = await _textContentAreasService.GetTextContentByEventVersionId(id,idVersion);
             if (textContext != null) return Ok(textContext);
             return BadRequest("Error occured while fetching data!");
         }

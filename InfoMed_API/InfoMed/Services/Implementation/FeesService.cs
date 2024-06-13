@@ -20,11 +20,11 @@ namespace InfoMed.Services.Implementation
             _dbContext = dbContext;
             _mapper = mapper;
         }
-        public async Task<List<ConferenceFeeDto>> GetConferenceFeesList(int eventId)
+        public async Task<List<ConferenceFeeDto>> GetConferenceFeesList(int id, int idVersion)
         {
             try
             {
-                var events = await _dbContext.ConferenceFees.Where(x=>x.IdEvent == eventId).OrderBy(x=>x.OrderNumber).Where(x=>x.IsActive==true).ToListAsync();
+                var events = await _dbContext.ConferenceFees.Where(x=>x.IdEvent == id && x.IdEventVersion == idVersion).OrderBy(x=>x.OrderNumber).Where(x=>x.IsActive==true).ToListAsync();
                 return _mapper.Map<List<ConferenceFeeDto>>(events);
             }
             catch (Exception ex)
@@ -39,8 +39,8 @@ namespace InfoMed.Services.Implementation
             try
             {
                 ConferenceFees scheduleMaster = _mapper.Map<ConferenceFees>(feesMasterDto);
-                var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEvent == feesMasterDto.IdEventVersion);
-                if (_event != null) scheduleMaster.IdEvent = _event.IdEvent;
+                //var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEvent == feesMasterDto.IdEventVersion);
+                //if (_event != null) scheduleMaster.IdEvent = _event.IdEvent;
                 var feesMasterEntity = await _dbContext.ConferenceFees.AddAsync(scheduleMaster);
                 await _dbContext.SaveChangesAsync();
                 return _mapper.Map<ConferenceFeeDto>(feesMasterEntity.Entity);

@@ -20,11 +20,11 @@ namespace InfoMed.Services.Implementation
             _dbContext = dbContext;
             _mapper = mapper;
         }
-        public async Task<List<LastYearMemoryDto>> GetLastYearMemoriesList(int eventId)
+        public async Task<List<LastYearMemoryDto>> GetLastYearMemoriesList(int id, int idVersion)
         {
             try
             {
-                var events = await _dbContext.LastYearMemories.Include(o => o.LastYearMemoryDetail).Where(x => x.IdEvent == eventId).OrderBy(x => x.LastYearMemoryDetail.OrderNumber).Where(x => x.Status == true).ToListAsync();
+                var events = await _dbContext.LastYearMemories.Include(o => o.LastYearMemoryDetail).Where(x => x.IdEvent == id && x.IdEventVersion == idVersion).OrderBy(x => x.LastYearMemoryDetail.OrderNumber).Where(x => x.Status == true).ToListAsync();
                 return _mapper.Map<List<LastYearMemoryDto>>(events);
             }
             catch (Exception ex)
@@ -42,12 +42,13 @@ namespace InfoMed.Services.Implementation
                     try
                     {
                     LastYearMemory lastYearMemory = _mapper.Map<LastYearMemory>(lastYeatMemoryDto);
-                    var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEvent == lastYeatMemoryDto.IdEventVersion);
-                    if (_event != null) lastYearMemory.IdEvent = _event.IdEvent;
+                    //var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEvent == lastYeatMemoryDto.IdEventVersion);
+                    //if (_event != null) lastYearMemory.IdEvent = _event.IdEvent;
+                    lastYearMemory.LastYearMemoryDetail = null;
                     var lastYearMemoryEntity = await _dbContext.LastYearMemories.AddAsync(lastYearMemory);
                     await _dbContext.SaveChangesAsync();
-                    int lastYearMemoryId = lastYearMemoryEntity.Entity.IdLastYearMemory;                 
-                    lastYearMemory.LastYearMemoryDetail.IdLastYearMemory = lastYearMemoryId;
+                    int lastYearMemoryId = lastYearMemoryEntity.Entity.IdLastYearMemory;
+                    lastYeatMemoryDto.LastYearMemoryDetail.IdLastYearMemory = lastYearMemoryId;
                     var newEvent = _mapper.Map<LastYearMemoryDetail>(lastYeatMemoryDto.LastYearMemoryDetail);
                     newEvent.IdLastYearMemory = lastYearMemoryId;
                         var entity = await _dbContext.LastYearMemoryDetails.AddAsync(newEvent);

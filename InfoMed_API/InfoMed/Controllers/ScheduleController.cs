@@ -19,9 +19,9 @@ namespace InfoMed.Controllers
         }
 
         [HttpGet("GetSchedulesMaster")]
-        public async Task<ActionResult<List<ScheduleMasterDto>>> GetSchedulesMaster(int idEventVersion)
+        public async Task<ActionResult<List<ScheduleMasterDto>>> GetSchedulesMaster(int id, int idVersion)
         {
-            var schedulesMaster = await _schedulerService.GetSchedulesMaster(idEventVersion);
+            var schedulesMaster = await _schedulerService.GetSchedulesMaster(id,idVersion);
             if(schedulesMaster != null) return Ok(schedulesMaster);
             return BadRequest("Error occured while fetching data!");
         }
