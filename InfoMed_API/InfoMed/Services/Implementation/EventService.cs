@@ -431,6 +431,7 @@ namespace InfoMed.Services.Implementation
                     var schedule = await _dbContext.ScheduleMaster.Where(x => x.IdEvent == _event.IdEvent && x.IsActive == true).ToListAsync();
                     var conferenceFees = await _dbContext.ConferenceFees.Where(x => x.IdEvent == _event.IdEvent && x.IsActive == true).ToListAsync();
                     var lastYearMemories = await _dbContext.LastYearMemories.Where(x => x.IdEvent == _event.IdEvent && x.Status == true ).ToListAsync();
+                    var paymentDetails = await _dbContext.PaymentDetails.FirstOrDefaultAsync(x => x.IdEvent == _event.IdEvent);
 
                     EventViewModel eventViewModel = new EventViewModel();
                     eventViewModel.EventVersion = _mapper.Map<EventVersionDto>(_event);
@@ -440,6 +441,7 @@ namespace InfoMed.Services.Implementation
                     eventViewModel.ScheduleMaster = _mapper.Map<List<ScheduleMasterDto>>(schedule);
                     eventViewModel.ConferenceFee = _mapper.Map<List<ConferenceFeeDto>>(conferenceFees);
                     eventViewModel.LastYearMemory = _mapper.Map<List<LastYearMemoryDto>>(lastYearMemories);
+                    eventViewModel.PaymentDetails = _mapper.Map<PaymentDetailsDto>(paymentDetails);
 
                     foreach (var obj in eventViewModel.ScheduleMaster)
                     {
