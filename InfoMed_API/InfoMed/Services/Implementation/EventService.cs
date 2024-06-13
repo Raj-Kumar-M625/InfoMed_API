@@ -39,7 +39,7 @@ namespace InfoMed.Services.Implementation
         {
             try
             {
-                var events = await _dbContext.Sponsors .Where(x=>x.IdEvent==eventId && x.Status==true).OrderBy(x=>x.OrderNumber).ToListAsync();
+                var events = await _dbContext.Sponsors.Where(x => x.IdEvent == eventId && x.Status == true).OrderBy(x => x.OrderNumber).ToListAsync();
                 return _mapper.Map<List<SponsersDto>>(events);
             }
             catch (Exception ex)
@@ -62,9 +62,6 @@ namespace InfoMed.Services.Implementation
                 return null!;
             }
         }
-        
-
-
 
         public async Task<EventVersionDto> GetEventById(int id)
         {
@@ -79,6 +76,7 @@ namespace InfoMed.Services.Implementation
                 return null!;
             }
         }
+
         public async Task<SponsersDto> GetSponserById(int id)
         {
             try
@@ -105,7 +103,7 @@ namespace InfoMed.Services.Implementation
                 _log.Error(ex.Message);
                 return null!;
             }
-        }        
+        }
 
         public async Task<EventVersionDto> AddEvent(EventVersionDto _event, string email)
         {
@@ -146,11 +144,12 @@ namespace InfoMed.Services.Implementation
                 }
             }
         }
+
         public async Task<bool> AddSponser(SponsersDto _sponser, string userId)
         {
             try
             {
-                var sponsers = _mapper.Map<Sponsers>(_sponser);               
+                var sponsers = _mapper.Map<Sponsers>(_sponser);
                 await _dbContext.Sponsors.AddAsync(sponsers);
                 await _dbContext.SaveChangesAsync();
                 return true;
@@ -177,8 +176,6 @@ namespace InfoMed.Services.Implementation
                 return false;
             }
         }
-        
-
 
         public async Task<EventVersionDto> UpdateEvent(EventVersionDto _event, string email)
         {
@@ -191,6 +188,7 @@ namespace InfoMed.Services.Implementation
                     dbObject.VersionStatus = _event.VersionStatus;
                     dbObject.EventWebPageName = _event.EventWebPageName;
                     dbObject.EventName = _event.EventName;
+                    dbObject.EventBackgroundImage = _event.EventBackgroundImage;
                     dbObject.EventType = _event.EventType;
                     dbObject.VenueName = _event.VenueName;
                     dbObject.VenueAddress = _event.VenueAddress;
@@ -236,6 +234,7 @@ namespace InfoMed.Services.Implementation
                 return null!;
             }
         }
+
         public async Task<List<SponserTypeDto>> GetSponserTypes()
         {
             try
@@ -249,7 +248,6 @@ namespace InfoMed.Services.Implementation
                 return null!;
             }
         }
-        
 
         public async Task<bool> UpdateSponser(SponsersDto _Sponser, string userId)
         {
@@ -264,8 +262,8 @@ namespace InfoMed.Services.Implementation
                     dbObject.SponsorName = _Sponser.SponsorName;
                     dbObject.SponsorShowText = _Sponser.SponsorShowText;
                     dbObject.OrderNumber = _Sponser.OrderNumber;
-                    dbObject.SponsorLogo =_Sponser.SponsorLogo;
-                    dbObject.Status = _Sponser.Status;                
+                    dbObject.SponsorLogo = _Sponser.SponsorLogo;
+                    dbObject.Status = _Sponser.Status;
                     _dbContext.Sponsors.Update(dbObject);
                     await _dbContext.SaveChangesAsync();
                     return true;
@@ -279,10 +277,6 @@ namespace InfoMed.Services.Implementation
             }
         }
 
-
-        
-
-
         public async Task<bool> UpdateSpeaker(SpeakersDto _speaker, string userId)
         {
             try
@@ -291,7 +285,7 @@ namespace InfoMed.Services.Implementation
                 if (dbObject != null)
                 {
                     dbObject.IdEvent = _speaker.IdEvent;
-                    dbObject.IdEventVersion = _speaker.IdEventVersion;                    
+                    dbObject.IdEventVersion = _speaker.IdEventVersion;
                     dbObject.SpeakerName = _speaker.SpeakerName;
                     dbObject.AboutSpeaker = _speaker.AboutSpeaker;
                     dbObject.OrderNumber = _speaker.OrderNumber;
@@ -317,7 +311,7 @@ namespace InfoMed.Services.Implementation
                 var dbObject = await _dbContext.Sponsors.FirstOrDefaultAsync(x => x.IdEventSponsor == Id);
                 if (dbObject != null)
                 {
-                    dbObject.Status = false;                    
+                    dbObject.Status = false;
                     _dbContext.Sponsors.Update(dbObject);
                     await _dbContext.SaveChangesAsync();
                     return true;
@@ -330,7 +324,6 @@ namespace InfoMed.Services.Implementation
                 return false;
             }
         }
-
 
         public async Task<bool> DeleteSpeaker(int Id)
         {
@@ -352,8 +345,70 @@ namespace InfoMed.Services.Implementation
                 return false;
             }
         }
-        
 
+        public async Task<EventVersionDto> GetEventByName(string webPageName)
+        {
+            try
+            {
+                var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => EF.Functions.Like(x.EventWebPageName, webPageName));
+                return _mapper.Map<EventVersionDto>(_event);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                return null!;
+            }
+        }
 
+        public async Task<EventViewModel> GetEventDetails(string webPageName)
+        {
+            try
+            {
+                var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => EF.Functions.Like(x.EventWebPageName, webPageName));
+
+                if (_event != null)
+                {
+                    var textContextAreas = await _dbContext.TextContentAreas.Where(x => x.IdEvent == _event.IdEvent && x.Status == true).ToListAsync();
+                    var sponcers = await _dbContext.Sponsors.Where(x => x.IdEvent == _event.IdEvent && x.Status == true).ToListAsync();
+                    var speakers = await _dbContext.Speakers.Where(x => x.IdEvent == _event.IdEvent && x.Status == true).ToListAsync();
+                    var schedule = await _dbContext.ScheduleMaster.Where(x => x.IdEvent == _event.IdEvent && x.IsActive == true).ToListAsync();
+                    var conferenceFees = await _dbContext.ConferenceFees.Where(x => x.IdEvent == _event.IdEvent && x.IsActive == true).ToListAsync();
+                    var lastYearMemories = await _dbContext.LastYearMemories.Where(x => x.IdEvent == _event.IdEvent && x.Status == true ).ToListAsync();
+
+                    EventViewModel eventViewModel = new EventViewModel();
+                    eventViewModel.EventVersion = _mapper.Map<EventVersionDto>(_event);
+                    eventViewModel.TextContentAreas = _mapper.Map<List<TextContentAreasDto>>(textContextAreas);
+                    eventViewModel.Sponsers = _mapper.Map<List<SponsersDto>>(sponcers);
+                    eventViewModel.Speakers = _mapper.Map<List<SpeakersDto>>(speakers);
+                    eventViewModel.ScheduleMaster = _mapper.Map<List<ScheduleMasterDto>>(schedule);
+                    eventViewModel.ConferenceFee = _mapper.Map<List<ConferenceFeeDto>>(conferenceFees);
+                    eventViewModel.LastYearMemory = _mapper.Map<List<LastYearMemoryDto>>(lastYearMemories);
+
+                    foreach (var obj in eventViewModel.ScheduleMaster)
+                    {
+                        var scheduleDetailsDtos = await _dbContext.ScheduleDetails
+                                                                  .Where(x => x.IdScheduleMaster == obj.IdScheduleMaster && x.IsActive == true)
+                                                                  .ToListAsync();
+                        obj.ScheduleDetailsDtos = _mapper.Map<List<ScheduleDetailsDto>>(scheduleDetailsDtos);
+                    }
+
+                    foreach(var obj in eventViewModel.LastYearMemory)
+                    {
+                        var lastYearMemoryDetails = await _dbContext.LastYearMemoryDetails
+                                                                  .Where(x => x.IdLastYearMemory == obj.IdLastYearMemory) 
+                                                                  .ToListAsync();
+                        obj.LastYearMemoryDetails = _mapper.Map<List<LastYearMemoryDetailDto>>(lastYearMemoryDetails);
+                    }
+
+                    return eventViewModel;
+                }
+                return null!;
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                return null!;
+            }
+        }
     }
 }

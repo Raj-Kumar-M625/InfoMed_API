@@ -1,4 +1,5 @@
 ﻿using InfoMed.DTO;
+using InfoMed.Models;
 using InfoMed.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -51,10 +52,17 @@ namespace InfoMed.Controllers
         }
 
         [HttpGet("GetEventById")]
-
         public async Task<ActionResult<EventVersionDto>> GetEventById(int id)
         {
             var _event = await _eventService.GetEventById(id);
+            if (_event != null) return Ok(_event);
+            return BadRequest("Error occured while fetching data!");
+        }
+
+        [HttpGet("GetEventByWebPageName")]
+        public async Task<ActionResult<EventVersionDto>> GetEventByWebPageName(string webPageName)
+        {
+            var _event = await _eventService.GetEventByName(webPageName);
             if (_event != null) return Ok(_event);
             return BadRequest("Error occured while fetching data!");
         }
@@ -151,9 +159,14 @@ namespace InfoMed.Controllers
             return BadRequest("Error occured while fetching data!");
         }
 
-
-
-
+        [HttpGet("GetEventDetails")]
+        [AllowAnonymous]
+        public async Task<ActionResult<EventViewModel>> GetEventDetails(string webPageName)
+        {
+            var eventDetails = await _eventService.GetEventDetails(webPageName);
+            if (eventDetails != null) return Ok(eventDetails);
+            return BadRequest("Error occured while fetching data!");
+        }
     }
 }
         

@@ -9,5 +9,6 @@
         public string LastYearMemoryText { get; set; }
         public bool Status { get; set; }
         public virtual LastYearMemoryDetailDto? LastYearMemoryDetail { get; set; }
+        public List<LastYearMemoryDetailDto>? LastYearMemoryDetails { get; set; }
     }
 }
