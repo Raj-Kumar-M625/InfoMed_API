@@ -421,7 +421,8 @@ namespace InfoMed.Services.Implementation
         {
             try
             {
-                var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => EF.Functions.Like(x.EventWebPageName, webPageName));
+                var _events = await _dbContext.EventVersions.Where(x => EF.Functions.Like(x.EventWebPageName, webPageName) && x.VersionStatus.ToLower().Trim() == "approved").ToListAsync();
+                var _event = _events.Count() > 0 ? _events.OrderByDescending(x => x.IdVersion).First():null;
 
                 if (_event != null)
                 {

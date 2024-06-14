@@ -129,5 +129,33 @@ namespace InfoMed.Controllers
                 throw ex;
             }
         }
+
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
+        {
+            try
+            {
+                var user = await _userManager.FindByEmailAsync(resetPasswordDto.Email);
+
+                if (user == null)
+                {
+                    return Ok(new { error = true, message = "User does exist!" });
+                }
+
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var result = await _userManager.ResetPasswordAsync(user, token, resetPasswordDto.ConfirmPassword);
+
+                if (result.Succeeded)
+                {
+                    return Ok(new { error = false, Message = "Password Reset Sucessfully." });
+                }
+
+                return Ok(new { error = true, message = "Password reset failed!" });
+            }
+            catch (Exception ex)
+            {
+                throw ex!;
+            }
+        }
     }
 }
