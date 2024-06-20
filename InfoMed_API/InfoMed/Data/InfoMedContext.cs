@@ -25,5 +25,7 @@ namespace InfoMed.Data
         public DbSet<LastYearMemory> LastYearMemories { get; set; }
         public DbSet<LastYearMemoryDetail> LastYearMemoryDetails { get; set; }
         public DbSet<PaymentDetails> PaymentDetails { get; set; }
+        public DbSet<Registration> Registration { get; set; }
+        public DbSet<RegistrationMember> RegistrationMember { get; set; }
     }
 }
