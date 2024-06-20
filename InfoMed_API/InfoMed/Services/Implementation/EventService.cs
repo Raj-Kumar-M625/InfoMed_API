@@ -202,6 +202,20 @@ namespace InfoMed.Services.Implementation
             try
             {
                 var sponsers = _mapper.Map<Sponsers>(_sponser);
+                var existingsponsers= await _dbContext.Sponsors
+                   .Where(tc => tc.OrderNumber >= sponsers.OrderNumber && tc.IdEvent == sponsers.IdEvent && tc.IdEventVersion == sponsers.IdEventVersion)
+                   .OrderBy(tc => tc.OrderNumber)
+                   .ToListAsync();
+                if (existingsponsers.Any())
+                {
+                    foreach (var content in existingsponsers)
+                    {
+                        content.OrderNumber++;
+                    }
+
+                    _dbContext.Sponsors.UpdateRange(existingsponsers);
+                }
+
                 await _dbContext.Sponsors.AddAsync(sponsers);
                 await _dbContext.SaveChangesAsync();
                 return true;
@@ -218,6 +232,19 @@ namespace InfoMed.Services.Implementation
             try
             {
                 var speakers = _mapper.Map<Speakers>(_speaker);
+                var existingspeakers = await _dbContext.Speakers
+                 .Where(tc => tc.OrderNumber >= speakers.OrderNumber && tc.IdEvent == speakers.IdEvent && tc.IdEventVersion == speakers.IdEventVersion && speakers.Status== true)
+                 .OrderBy(tc => tc.OrderNumber)
+                 .ToListAsync();
+                if (existingspeakers.Any())
+                {
+                    foreach (var content in existingspeakers)
+                    {
+                        content.OrderNumber++;
+                    }
+
+                    _dbContext.Speakers.UpdateRange(existingspeakers);
+                }
                 await _dbContext.Speakers.AddAsync(speakers);
                 await _dbContext.SaveChangesAsync();
                 return true;
@@ -309,7 +336,30 @@ namespace InfoMed.Services.Implementation
         public async Task<bool> UpdateSponser(SponsersDto _Sponser, string userId)
         {
             try
-            {
+            {                
+                if (_Sponser.Status != false)
+                {
+                    var spoobject = await _dbContext.Sponsors.FirstOrDefaultAsync(x => x.IdEventSponsor == _Sponser.IdEventSponsor);
+                    if(spoobject.OrderNumber != _Sponser.OrderNumber)
+                    {
+                        var existingSponser = await _dbContext.Sponsors
+                                       .Where(tc => tc.OrderNumber == _Sponser.OrderNumber && tc.IdEvent == _Sponser.IdEvent && tc.IdEventVersion == _Sponser.IdEventVersion && tc.Status == true)
+                                       .OrderBy(tc => tc.OrderNumber)
+                                       .ToListAsync();
+
+                        if (existingSponser.Any())
+                        {
+                            foreach (var content in existingSponser)
+                            {
+                                content.OrderNumber++;
+                            }
+
+                            _dbContext.Sponsors.UpdateRange(existingSponser);
+                        }
+                    }
+                    
+                }
+
                 var dbObject = await _dbContext.Sponsors.FirstOrDefaultAsync(x => x.IdEventSponsor == _Sponser.IdEventSponsor);
                 if (dbObject != null)
                 {
@@ -338,6 +388,27 @@ namespace InfoMed.Services.Implementation
         {
             try
             {
+                if (_speaker.Status != false)
+                {
+                    var usObject = await _dbContext.Speakers.FirstOrDefaultAsync(x => x.IdSpeaker == _speaker.IdSpeaker);
+                    if (usObject.OrderNumber != _speaker.OrderNumber)
+                    {
+                        var existingSpeaker = await _dbContext.Speakers
+                                       .Where(tc => tc.OrderNumber >= _speaker.OrderNumber && tc.IdEvent == _speaker.IdEvent && tc.IdEventVersion == _speaker.IdEventVersion && tc.Status == true)
+                                       .OrderBy(tc => tc.OrderNumber)
+                                       .ToListAsync();
+                        if (existingSpeaker.Any())
+                        {
+                            foreach (var content in existingSpeaker)
+                            {
+                                content.OrderNumber++;
+                            }
+
+                            _dbContext.Speakers.UpdateRange(existingSpeaker);
+                        }
+                    }                      
+                }
+
                 var dbObject = await _dbContext.Speakers.FirstOrDefaultAsync(x => x.IdSpeaker == _speaker.IdSpeaker);
                 if (dbObject != null)
                 {
@@ -349,7 +420,8 @@ namespace InfoMed.Services.Implementation
                     dbObject.SpeakerImage = _speaker.SpeakerImage;
                     dbObject.Status = _speaker.Status;
                     _dbContext.Speakers.Update(dbObject);
-                    await _dbContext.SaveChangesAsync();
+                    await _dbContext.SaveChangesAsync();                  
+                    
                     return true;
                 }
                 return false;
@@ -421,18 +493,21 @@ namespace InfoMed.Services.Implementation
         {
             try
             {
-                var _events = await _dbContext.EventVersions.Where(x => EF.Functions.Like(x.EventWebPageName, webPageName) && x.VersionStatus.ToLower().Trim() == "approved").ToListAsync();
-                var _event = _events.Count() > 0 ? _events.OrderByDescending(x => x.IdVersion).First():null;
-
+                //var _events = await _dbContext.EventVersions.Where(x => EF.Functions.Like(x.EventWebPageName, webPageName) && x.VersionStatus.ToLower().Trim() == "approved").ToListAsync();
+                //var _event = _events.Count() > 0 ? _events.OrderByDescending(x => x.IdVersion).First():null;
+                var _event = await _dbContext.EventVersions
+    .Where(x => EF.Functions.Like(x.EventWebPageName, webPageName) && x.VersionStatus.ToLower().Trim() == "approved")
+    .OrderByDescending(x => x.IdVersion)
+    .FirstOrDefaultAsync();
                 if (_event != null)
                 {
-                    var textContextAreas = await _dbContext.TextContentAreas.Where(x => x.IdEvent == _event.IdEvent && x.Status == true).ToListAsync();
-                    var sponcers = await _dbContext.Sponsors.Where(x => x.IdEvent == _event.IdEvent && x.Status == true).ToListAsync();
-                    var speakers = await _dbContext.Speakers.Where(x => x.IdEvent == _event.IdEvent && x.Status == true).ToListAsync();
-                    var schedule = await _dbContext.ScheduleMaster.Where(x => x.IdEvent == _event.IdEvent && x.IsActive == true).ToListAsync();
-                    var conferenceFees = await _dbContext.ConferenceFees.Where(x => x.IdEvent == _event.IdEvent && x.IsActive == true).ToListAsync();
-                    var lastYearMemories = await _dbContext.LastYearMemories.Where(x => x.IdEvent == _event.IdEvent && x.Status == true ).ToListAsync();
-                    var paymentDetails = await _dbContext.PaymentDetails.FirstOrDefaultAsync(x => x.IdEvent == _event.IdEvent);
+                    var textContextAreas = await _dbContext.TextContentAreas.Where(x => x.IdEvent == _event.IdEvent && x.IdEventVersion == _event.IdEventVersion && x.Status == true).ToListAsync();
+                    var sponcers = await _dbContext.Sponsors.Where(x => x.IdEvent == _event.IdEvent && x.IdEventVersion == _event.IdEventVersion && x.Status == true).ToListAsync();
+                    var speakers = await _dbContext.Speakers.Where(x => x.IdEvent == _event.IdEvent && x.IdEventVersion == _event.IdEventVersion && x.Status == true).ToListAsync();
+                    var schedule = await _dbContext.ScheduleMaster.Where(x => x.IdEvent == _event.IdEvent && x.IdEventVersion == _event.IdEventVersion && x.IsActive == true).ToListAsync();
+                    var conferenceFees = await _dbContext.ConferenceFees.Where(x => x.IdEvent == _event.IdEvent && x.IdEventVersion == _event.IdEventVersion && x.IsActive == true).ToListAsync();
+                    var lastYearMemories = await _dbContext.LastYearMemories.Where(x => x.IdEvent == _event.IdEvent && x.IdEventVersion == _event.IdEventVersion && x.Status == true ).ToListAsync();
+                    var paymentDetails = await _dbContext.PaymentDetails.FirstOrDefaultAsync(x => x.IdEvent == _event.IdEvent && x.IdEventVersion == _event.IdEventVersion);
 
                     EventViewModel eventViewModel = new EventViewModel();
                     eventViewModel.EventVersion = _mapper.Map<EventVersionDto>(_event);

@@ -136,6 +136,7 @@ namespace InfoMed.Services.Implementation
                     scheduleDetails.StartTime = scheduleDetailsDto.StartTime;
                     scheduleDetails.EndTime = scheduleDetailsDto.EndTime;
                     scheduleDetails.Topic = scheduleDetailsDto.Topic;
+                    scheduleDetails.TopicName = scheduleDetailsDto.TopicName;
                     scheduleDetails.IsActive = scheduleDetailsDto.IsActive;
                     var scheduleDetailsEntity = _dbContext.ScheduleDetails.Update(scheduleDetails);
                     await _dbContext.SaveChangesAsync();

@@ -50,6 +50,21 @@ namespace InfoMed.Services.Implementation
                     int lastYearMemoryId = lastYearMemoryEntity.Entity.IdLastYearMemory;
                     lastYeatMemoryDto.LastYearMemoryDetail.IdLastYearMemory = lastYearMemoryId;
                     var newEvent = _mapper.Map<LastYearMemoryDetail>(lastYeatMemoryDto.LastYearMemoryDetail);
+
+                    var lastYear = await _dbContext.LastYearMemoryDetails
+                .Where(tc => tc.OrderNumber >= newEvent.OrderNumber && tc.IdLastYearMemory == newEvent.IdLastYearMemory)
+                .OrderBy(tc => tc.OrderNumber)
+                .ToListAsync();
+                    if (lastYear.Any())
+                    {
+                        foreach (var content in lastYear)
+                        {
+                            content.OrderNumber++;
+                        }
+
+                        _dbContext.LastYearMemoryDetails.UpdateRange(lastYear);
+                    }
+
                     newEvent.IdLastYearMemory = lastYearMemoryId;
                         var entity = await _dbContext.LastYearMemoryDetails.AddAsync(newEvent);
                         await _dbContext.SaveChangesAsync();
@@ -78,10 +93,28 @@ namespace InfoMed.Services.Implementation
                     lastYearMemory.LastYearMemoryHeader = LastYearMemoryDto.LastYearMemoryHeader;
                     lastYearMemory.LastYearMemoryText = LastYearMemoryDto.LastYearMemoryText;
                     lastYearMemory.Status = LastYearMemoryDto.Status;
+                    var lastYearMemoryEntity = _dbContext.LastYearMemories.Update(lastYearMemory);
+                    if(LastYearMemoryDto.Status != false)
+                    {
+                        var lastYear = await _dbContext.LastYearMemoryDetails
+              .Where(tc => tc.OrderNumber >= LastYearMemoryDto.LastYearMemoryDetail.OrderNumber && tc.IdLastYearMemory == LastYearMemoryDto.LastYearMemoryDetail.IdLastYearMemory)
+              .OrderBy(tc => tc.OrderNumber)
+              .ToListAsync();
+                        if (lastYear.Any())
+                        {
+                            foreach (var content in lastYear)
+                            {
+                                content.OrderNumber++;
+                            }
+
+                            _dbContext.LastYearMemoryDetails.UpdateRange(lastYear);
+                        }
+                    }
+                   
+
                     lastYearMemory.LastYearMemoryDetail.OrderNumber = LastYearMemoryDto.LastYearMemoryDetail.OrderNumber;
                     lastYearMemory.LastYearMemoryDetail.MediaShortDesc = LastYearMemoryDto.LastYearMemoryDetail.MediaShortDesc;                   
-                    lastYearMemory.LastYearMemoryDetail.MediaType = LastYearMemoryDto.LastYearMemoryDetail.MediaType;
-                    var lastYearMemoryEntity = _dbContext.LastYearMemories.Update(lastYearMemory);
+                    lastYearMemory.LastYearMemoryDetail.MediaType = LastYearMemoryDto.LastYearMemoryDetail.MediaType;                   
                     var lastYearMemoryDetailsEntity = _dbContext.LastYearMemoryDetails.Update(lastYearMemory.LastYearMemoryDetail);
                     await _dbContext.SaveChangesAsync();
                     return _mapper.Map<LastYearMemoryDto>(lastYearMemoryEntity.Entity);

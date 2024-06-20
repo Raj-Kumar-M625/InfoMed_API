@@ -30,5 +30,6 @@ namespace InfoMed.Models
         public DateTime? EventEndDate { get; set; }
         public int NoOfDays { get; set; }
         public string? EventBackgroundImage {  get; set; }
+        public bool? EventView {  get; set; }
     }
 }

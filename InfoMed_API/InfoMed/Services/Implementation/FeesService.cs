@@ -39,6 +39,20 @@ namespace InfoMed.Services.Implementation
             try
             {
                 ConferenceFees scheduleMaster = _mapper.Map<ConferenceFees>(feesMasterDto);
+                var conferenceFeesvalue = await _dbContext.ConferenceFees
+                 .Where(tc => tc.OrderNumber >= scheduleMaster.OrderNumber && tc.IdEvent == scheduleMaster.IdEvent && tc.IdEventVersion == scheduleMaster.IdEventVersion)
+                 .OrderBy(tc => tc.OrderNumber)
+                 .ToListAsync();
+                if (conferenceFeesvalue.Any())
+                {
+                    foreach (var content in conferenceFeesvalue)
+                    {
+                        content.OrderNumber++;
+                    }
+
+                    _dbContext.ConferenceFees.UpdateRange(conferenceFeesvalue);
+                }
+
                 //var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEvent == feesMasterDto.IdEventVersion);
                 //if (_event != null) scheduleMaster.IdEvent = _event.IdEvent;
                 var feesMasterEntity = await _dbContext.ConferenceFees.AddAsync(scheduleMaster);
@@ -73,6 +87,27 @@ namespace InfoMed.Services.Implementation
             {
                 var feesMaster = await _dbContext.ConferenceFees
                                                      .FirstOrDefaultAsync(x => x.IdConferenceFee == feesMasterDto.IdConferenceFee);
+                if(feesMasterDto.IsActive != false)
+                {
+                    if(feesMaster.OrderNumber != feesMasterDto.OrderNumber)
+                    {
+                        var conferenceFeesvalue = await _dbContext.ConferenceFees
+                                  .Where(tc => tc.OrderNumber >= feesMasterDto.OrderNumber && tc.IdEvent == feesMasterDto.IdEvent && tc.IdEventVersion == feesMasterDto.IdEventVersion)
+                                  .OrderBy(tc => tc.OrderNumber)
+                                  .ToListAsync();
+                        if (conferenceFeesvalue.Any())
+                        {
+                            foreach (var content in conferenceFeesvalue)
+                            {
+                                content.OrderNumber++;
+                            }
+
+                            _dbContext.ConferenceFees.UpdateRange(conferenceFeesvalue);
+                        }
+                    }
+                  
+                }
+             
                 if (feesMaster != null)
                 {
                     feesMaster.FeeName = feesMasterDto.FeeName;

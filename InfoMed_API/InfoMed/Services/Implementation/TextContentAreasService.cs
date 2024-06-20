@@ -26,6 +26,19 @@ namespace InfoMed.Services.Implementation
             try
             {
                 var textContent = _mapper.Map<TextContentAreas>(_textContent);
+                var existingTextContent = await _dbContext.TextContentAreas
+                     .Where(tc => tc.OrderNumber >= textContent.OrderNumber && tc.IdEvent == textContent.IdEvent && tc.IdEventVersion == textContent.IdEventVersion)
+                     .OrderBy(tc => tc.OrderNumber)
+                     .ToListAsync();
+                if (existingTextContent.Any())
+                {
+                    foreach (var content in existingTextContent)
+                    {
+                        content.OrderNumber++;
+                    }
+
+                    _dbContext.TextContentAreas.UpdateRange(existingTextContent);
+                }
                 //var _event = await _dbContext.EventVersions.FirstOrDefaultAsync(x => x.IdEventVersion == textContent.IdEventVersion);
                 //if (_event != null) textContent.IdEvent = _event.IdEvent;
                 textContent.Status = true;
@@ -85,6 +98,28 @@ namespace InfoMed.Services.Implementation
         {
             try
             {
+                if (_textContent.Status != false)
+                {
+                    var textContentobj = await _dbContext.TextContentAreas.FirstOrDefaultAsync(x => x.IdTextContentArea == _textContent.IdTextContentArea);
+                    if (textContentobj.OrderNumber != _textContent.OrderNumber)
+                    {
+                        var existingTextContent = await _dbContext.TextContentAreas
+                    .Where(tc => tc.OrderNumber >= _textContent.OrderNumber && tc.IdEvent == _textContent.IdEvent && tc.IdEventVersion == _textContent.IdEventVersion)
+                    .OrderBy(tc => tc.OrderNumber)
+                    .ToListAsync();
+                        if (existingTextContent.Any())
+                        {
+                            foreach (var content in existingTextContent)
+                            {
+                                content.OrderNumber++;
+                            }
+
+                            _dbContext.TextContentAreas.UpdateRange(existingTextContent);
+                        }
+                    }
+                        
+                }
+
                 var textContent = await _dbContext.TextContentAreas.FirstOrDefaultAsync(x => x.IdTextContentArea == _textContent.IdTextContentArea);
                 if (textContent != null)
                 {
