@@ -1,8 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using InfoMed.DTO;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace InfoMed.Models
 {
-    public class Registration
+    public class Registrations
     {
         [Key]
         public int IdRegistration { get; set; }
@@ -19,6 +21,5 @@ namespace InfoMed.Models
         public string IdConferenceFee { get; set; }        
         public decimal? AmountToBePaid { get; set; }
         public int? NoOfPersons { get; set; }
-        public virtual RegistrationMember? RegistrationMember { get; set; }
     }
 }

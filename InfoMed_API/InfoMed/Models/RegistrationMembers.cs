@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace InfoMed.Models
 {
-    public class RegistrationMember
+    public class RegistrationMembers
     {
         [Key]
         public int IdRegistrationMember { get; set; }
@@ -12,6 +12,6 @@ namespace InfoMed.Models
         public string MemberName { get; set; }      
         public string EmailID { get; set; }   
         public string MobileNumber { get; set; }      
-        public virtual Registration Registration { get; set; }
+        public virtual Registrations Registration { get; set; }
     }
 }

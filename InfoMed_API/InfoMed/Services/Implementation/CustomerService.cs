@@ -5,6 +5,7 @@ using InfoMed.Models;
 using InfoMed.Services.Interface;
 using log4net;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 
 namespace InfoMed.Services.Implementation
@@ -26,14 +27,22 @@ namespace InfoMed.Services.Implementation
             {
                 try
                 {
-                    Registration registration = _mapper.Map<Registration>(registrationDto);
+                    Registrations registration = _mapper.Map<Registrations>(registrationDto);
                     
-                    var registrationEntity = await _dbContext.Registration.AddAsync(registration);
+                    var registrationEntity = await _dbContext.Registrations.AddAsync(registration);
                     await _dbContext.SaveChangesAsync();
+
                     int registrationId = registrationEntity.Entity.IdRegistration;
-                    registrationDto.RegistrationMember.IdRegistration = registrationId;
-                    var registrationMemberDetails = _mapper.Map<RegistrationMember>(registrationDto.RegistrationMember);;
-                    var entity = await _dbContext.RegistrationMember.AddAsync(registrationMemberDetails);
+
+                    RegistrationMembers registrationMember = new RegistrationMembers()
+                    {
+                        IdRegistration = registrationId,
+                        MemberName = registrationDto.Name,
+                        EmailID = registrationDto.EmailID,
+                        MobileNumber = registrationDto.MobileNumber
+                    };
+
+                    var entity = await _dbContext.RegistrationMembers.AddAsync(registrationMember);
                     await _dbContext.SaveChangesAsync();
                     await transaction.CommitAsync();
                     var mapEntity = _mapper.Map<RegistrationDto>(registrationEntity.Entity);
@@ -52,7 +61,7 @@ namespace InfoMed.Services.Implementation
         {
             try
             {
-                var registration = await _dbContext.Registration.Where(x => x.IdEvent == id ).Include(o => o.RegistrationMember).FirstOrDefaultAsync();
+                var registration = await _dbContext.Registrations.Where(x => x.IdEvent == id ).FirstOrDefaultAsync();
                 return _mapper.Map<RegistrationDto>(registration);
             }
             catch (Exception ex)
@@ -65,6 +74,20 @@ namespace InfoMed.Services.Implementation
         public Task<RegistrationDto> UpdateRegistrationMembers(RegistrationDto registrationDto)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<Registrations> GetRegistrationMembersByEmail(string email, int idEvent)
+        {
+            try
+            {
+                var registration = await _dbContext.Registrations.Where(x => x.EmailID == email && x.IdEvent == idEvent).FirstOrDefaultAsync();
+                return registration;
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                return null!;
+            }
         }
     }
 }

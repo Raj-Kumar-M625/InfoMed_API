@@ -1,4 +1,5 @@
 ﻿using InfoMed.DTO;
+using InfoMed.Models;
 using InfoMed.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -9,7 +10,6 @@ namespace InfoMed.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class CustomerController : ControllerBase
     {
 
@@ -43,8 +43,11 @@ namespace InfoMed.Controllers
             return BadRequest("Error occured while updating data!");
         }
 
-
-
-
+        [HttpGet("GetRegistrationMembersByEmail")]
+        public async Task<ActionResult<Registrations>> GetRegistrationMembersByEmail(string email, int idEvent)
+        {
+            var register = await _customerService.GetRegistrationMembersByEmail(email,idEvent);
+            return Ok(register);
+        }
     }
 }
