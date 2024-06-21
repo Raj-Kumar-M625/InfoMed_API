@@ -53,7 +53,7 @@ namespace InfoMed.Controllers
                         EmailAddress = user.EmailAddress,
                         UserName = user.UserName,
                         MobileNumber = user.MobileNumber,
-                        Role = "Admin",
+                        Role = user.Role,
                         Status = true
                     };
 
@@ -65,7 +65,7 @@ namespace InfoMed.Controllers
                         return StatusCode(StatusCodes.Status500InternalServerError, new { Status = "Error", Message = string.Join(", ", result.Errors.Select(x => x.Description)) });
 
                     // Assign the new user to the role
-                    await _userManager.AddToRoleAsync(identityUser, "Admin");
+                    await _userManager.AddToRoleAsync(identityUser, user.Role);
                     await transaction.CommitAsync();
                     return Ok(new { Status = "Success", Message = "User registered successfully!" });
                 }
