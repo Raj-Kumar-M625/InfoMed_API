@@ -27,8 +27,31 @@ namespace InfoMed.Services.Implementation
             {
                 try
                 {
-                    Registrations registration = _mapper.Map<Registrations>(registrationDto);
+                    if (registrationDto.IdRegistration > 0)
+                    {
+                        var register = await _dbContext.Registrations.FirstOrDefaultAsync(x => x.IdRegistration == registrationDto.IdRegistration);
+                        register.Name = registrationDto.Name;
+                        register.EmailID = registrationDto.EmailID;
+                        register.MobileNumber = registrationDto.MobileNumber;
+                        register.CompanyName = registrationDto.CompanyName;
+                        register.CountryName = registrationDto.CountryName;
+                        register.ZipCode = registrationDto.ZipCode;
+                        register.Address = registrationDto.Address;
+                        _dbContext.Registrations.Update(register);
+
+                        var registerMember = await _dbContext.RegistrationMembers.FirstOrDefaultAsync(x => x.IdRegistration == registrationDto.IdRegistration);
+                        registerMember.MemberName = registrationDto.Name;
+                        registerMember.EmailID = registrationDto.EmailID;
+                        registerMember.MobileNumber = registrationDto.MobileNumber;
+                        _dbContext.RegistrationMembers.Update(registerMember);
+
+                        await _dbContext.SaveChangesAsync();
+                        await transaction.CommitAsync();
+                        return _mapper.Map<RegistrationDto>(register);
+                    }
                     
+                    Registrations registration = _mapper.Map<Registrations>(registrationDto);
+                    registration.RegisteredDate = DateTime.Now;
                     var registrationEntity = await _dbContext.Registrations.AddAsync(registration);
                     await _dbContext.SaveChangesAsync();
 
