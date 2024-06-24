@@ -21,9 +21,9 @@ namespace InfoMed.Controllers
         }
 
         [HttpGet("GetRegistrationMembers")]
-        public async Task<ActionResult<RegistrationDto>> GetRegistrationMembers(int id, int idVersion) 
+        public async Task<ActionResult<List<RegistrationMemberDto>>> GetRegistrationMembers(int id) 
         {
-            var register = await _customerService.GetRegistrationMembers(id, idVersion);
+            var register = await _customerService.GetRegistrationMembers(id);
             return Ok(register);
         }
 
