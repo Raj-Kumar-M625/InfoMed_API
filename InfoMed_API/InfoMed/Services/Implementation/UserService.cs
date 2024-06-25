@@ -62,6 +62,13 @@ namespace InfoMed.Services.Implementation
                     userExists.Email = user.EmailAddress;
                     userExists.PhoneNumber = user.MobileNumber;
                     await _userManager.UpdateAsync(userExists);
+
+                    var userRoles = await _userManager.GetRolesAsync(userExists);
+                    foreach (var role in userRoles)
+                    {
+                        await _userManager.RemoveFromRoleAsync(userExists, role);
+                    }
+                    await _userManager.AddToRoleAsync(userExists, user.Role);
                 }
                 else
                 {
