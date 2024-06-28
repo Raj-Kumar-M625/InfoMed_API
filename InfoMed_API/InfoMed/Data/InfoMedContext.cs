@@ -27,5 +27,12 @@ namespace InfoMed.Data
         public DbSet<PaymentDetails> PaymentDetails { get; set; }
         public DbSet<Registrations> Registrations { get; set; }
         public DbSet<RegistrationMembers> RegistrationMembers { get; set; }
+        public DbSet<Country> Country { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.Entity<Country>().HasNoKey();
+        }
     }
 }

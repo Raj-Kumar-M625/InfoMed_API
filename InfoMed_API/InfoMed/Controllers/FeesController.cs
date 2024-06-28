@@ -20,6 +20,7 @@ namespace InfoMed.Controllers
         }
 
         [HttpGet("GetConferenceFeesList")]
+        [AllowAnonymous]
         public async Task<ActionResult<List<ConferenceFeeDto>>> GetConferenceFeesList(int id, int idVersion) 
         {
             var events = await _feesService.GetConferenceFeesList(id,idVersion);
