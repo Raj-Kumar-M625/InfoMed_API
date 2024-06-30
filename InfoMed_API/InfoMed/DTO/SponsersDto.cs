@@ -9,7 +9,7 @@ namespace InfoMed.DTO
         public int IdEventVersion { get; set; }
         public string SponsorType { get; set; }
         public string SponsorName { get; set; }
-        public string SponsorShowText { get; set; }
+        public string? SponsorShowText { get; set; }
         public string SponsorLogo { get; set; }        
         public int OrderNumber { get; set; }
         public bool Status { get; set; }
