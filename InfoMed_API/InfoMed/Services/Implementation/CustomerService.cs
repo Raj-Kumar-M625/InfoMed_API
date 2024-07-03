@@ -47,40 +47,45 @@ namespace InfoMed.Services.Implementation
                             .Where(x => x.IdRegistration == registrationDto.IdRegistration)
                             .ToListAsync();
 
-                        // Update or Insert Members
-                        foreach (var memberDto in registrationDto.RegistrationMembers)
+                        if(registrationDto.RegType != "Single Registration")
                         {
-                            var existingMember = existingMembers.FirstOrDefault(x => x.IdRegistrationMember == memberDto.IdRegistrationMember);
-                            if (existingMember != null)
+                            foreach (var memberDto in registrationDto.RegistrationMembers)
                             {
-                                // Update existing member
-                                existingMember.MemberName = memberDto.MemberName;
-                                existingMember.EmailID = memberDto.EmailID;
-                                existingMember.MobileNumber = memberDto.MobileNumber;
-                                _dbContext.RegistrationMembers.Update(existingMember);
-                            }
-                            else
-                            {
-                                // Insert new member
-                                var newMember = new RegistrationMembers
+                                var existingMember = existingMembers.FirstOrDefault(x => x.IdRegistrationMember == memberDto.IdRegistrationMember);
+                                if (existingMember != null)
                                 {
-                                    IdRegistration = registrationDto.IdRegistration,
-                                    MemberName = memberDto.MemberName,
-                                    EmailID = memberDto.EmailID,
-                                    MobileNumber = memberDto.MobileNumber
-                                };
-                                await _dbContext.RegistrationMembers.AddAsync(newMember);
+                                    // Update existing member
+                                    existingMember.MemberName = memberDto.MemberName;
+                                    existingMember.EmailID = memberDto.EmailID;
+                                    existingMember.MobileNumber = memberDto.MobileNumber;
+                                    _dbContext.RegistrationMembers.Update(existingMember);
+                                }
+                                else
+                                {
+                                    // Insert new member
+                                    var newMember = new RegistrationMembers
+                                    {
+                                        IdRegistration = registrationDto.IdRegistration,
+                                        MemberName = memberDto.MemberName,
+                                        EmailID = memberDto.EmailID,
+                                        MobileNumber = memberDto.MobileNumber
+                                    };
+                                    await _dbContext.RegistrationMembers.AddAsync(newMember);
+                                }
                             }
-                        }
 
-                        // Delete members not in the new list
-                        foreach (var existingMember in existingMembers)
-                        {
-                            if (!registrationDto.RegistrationMembers.Any(m => m.IdRegistrationMember == existingMember.IdRegistrationMember))
+                            // Delete members not in the new list
+                            foreach (var existingMember in existingMembers)
                             {
-                                _dbContext.RegistrationMembers.Remove(existingMember);
+                                if (!registrationDto.RegistrationMembers.Any(m => m.IdRegistrationMember == existingMember.IdRegistrationMember))
+                                {
+                                    _dbContext.RegistrationMembers.Remove(existingMember);
+                                }
                             }
+
                         }
+                        // Update or Insert Members
+                       
 
                         await _dbContext.SaveChangesAsync();
                         await transaction.CommitAsync();
