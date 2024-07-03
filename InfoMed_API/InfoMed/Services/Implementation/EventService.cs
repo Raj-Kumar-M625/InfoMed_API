@@ -496,13 +496,13 @@ namespace InfoMed.Services.Implementation
                 //var _events = await _dbContext.EventVersions.Where(x => EF.Functions.Like(x.EventWebPageName, webPageName) && x.VersionStatus.ToLower().Trim() == "approved").ToListAsync();
                 //var _event = _events.Count() > 0 ? _events.OrderByDescending(x => x.IdVersion).First():null;
                 var _event = await _dbContext.EventVersions
-    .Where(x => EF.Functions.Like(x.EventWebPageName, webPageName) && x.VersionStatus.ToLower().Trim() == "approved")
-    .OrderByDescending(x => x.IdVersion)
-    .FirstOrDefaultAsync();
+                    .Where(x => EF.Functions.Like(x.EventWebPageName, webPageName) && x.VersionStatus.ToLower().Trim() == "approved")
+                    .OrderByDescending(x => x.IdVersion)
+                    .FirstOrDefaultAsync();
                 if (_event != null)
                 {
                     var textContextAreas = await _dbContext.TextContentAreas.Where(x => x.IdEvent == _event.IdEvent && x.IdEventVersion == _event.IdEventVersion && x.Status == true).ToListAsync();
-                    var sponcers = await _dbContext.Sponsors.Where(x => x.IdEvent == _event.IdEvent && x.IdEventVersion == _event.IdEventVersion && x.Status == true).ToListAsync();
+                    var sponcers = await _dbContext.Sponsors.Where(x => x.IdEvent == _event.IdEvent && x.IdEventVersion == _event.IdEventVersion && x.Status == true).OrderBy(x => x.OrderNumber).ToListAsync();
                     var speakers = await _dbContext.Speakers.Where(x => x.IdEvent == _event.IdEvent && x.IdEventVersion == _event.IdEventVersion && x.Status == true).ToListAsync();
                     var schedule = await _dbContext.ScheduleMaster.Where(x => x.IdEvent == _event.IdEvent && x.IdEventVersion == _event.IdEventVersion && x.IsActive == true).ToListAsync();
                     var conferenceFees = await _dbContext.ConferenceFees.Where(x => x.IdEvent == _event.IdEvent && x.IdEventVersion == _event.IdEventVersion && x.IsActive == true).ToListAsync();
@@ -523,6 +523,7 @@ namespace InfoMed.Services.Implementation
                     {
                         var scheduleDetailsDtos = await _dbContext.ScheduleDetails
                                                                   .Where(x => x.IdScheduleMaster == obj.IdScheduleMaster && x.IsActive == true)
+                                                                  .OrderBy(x => x.StartTime.TimeOfDay)
                                                                   .ToListAsync();
                         obj.ScheduleDetailsDtos = _mapper.Map<List<ScheduleDetailsDto>>(scheduleDetailsDtos);
                     }

@@ -40,7 +40,8 @@ namespace InfoMed.Services.Implementation
         {
             try
             {
-                var scheduleDetails = await _dbContext.ScheduleDetails.Where(x => x.IdScheduleMaster == IdScheduleMaster && x.IsActive) 
+                var scheduleDetails = await _dbContext.ScheduleDetails.Where(x => x.IdScheduleMaster == IdScheduleMaster && x.IsActive)
+                                                                      .OrderBy(x => x.StartTime)
                                                                       .ToListAsync();
                 return _mapper.Map<List<ScheduleDetailsDto>>(scheduleDetails);
             }
