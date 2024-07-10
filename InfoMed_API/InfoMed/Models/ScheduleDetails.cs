@@ -12,6 +12,6 @@ namespace InfoMed.Models
         public DateTime EndTime { get; set; }
         public string? Topic { get; set; }
         public string? TopicName{get; set;}
-        public bool IsActive { get; set; }
+        public bool? IsActive { get; set; }
     }
 }

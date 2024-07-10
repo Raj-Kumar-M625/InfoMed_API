@@ -7,7 +7,7 @@ namespace InfoMed.Models
     public class Country
     {
         public string CountryName { get; set; }
-        public string ISDCode { get; set; }
-        public string CountryCode { get; set; }
+        public string? ISDCode { get; set; }
+        public string? CountryCode { get; set; }
     }
 }
