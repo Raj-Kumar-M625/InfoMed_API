@@ -23,7 +23,6 @@ namespace InfoMed.Utils
             CreateMap<PaymentDetails, PaymentDetailsDto>().ReverseMap();
             CreateMap<Registrations, RegistrationDto>().ReverseMap();
             CreateMap<RegistrationMembers, RegistrationMemberDto>().ReverseMap();
-
         }
     }
 }
