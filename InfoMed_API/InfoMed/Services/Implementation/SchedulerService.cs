@@ -25,7 +25,7 @@ namespace InfoMed.Services.Implementation
         {
             try
             {
-                var scheduleMaster = await _dbContext.ScheduleMaster.Where(x => x.IdEvent == id && x.IdEventVersion == idVersion && x.IsActive)
+                var scheduleMaster = await _dbContext.ScheduleMaster.Where(x => x.IdEvent == id && x.IdEventVersion == idVersion && x.IsActive == true)
                                                                     .ToListAsync();
                 return _mapper.Map<List<ScheduleMasterDto>>(scheduleMaster);
             }
@@ -40,7 +40,7 @@ namespace InfoMed.Services.Implementation
         {
             try
             {
-                var scheduleDetails = await _dbContext.ScheduleDetails.Where(x => x.IdScheduleMaster == IdScheduleMaster && x.IsActive)
+                var scheduleDetails = await _dbContext.ScheduleDetails.Where(x => x.IdScheduleMaster == IdScheduleMaster && x.IsActive == true)
                                                                       .OrderBy(x => x.StartTime)
                                                                       .ToListAsync();
                 return _mapper.Map<List<ScheduleDetailsDto>>(scheduleDetails);
