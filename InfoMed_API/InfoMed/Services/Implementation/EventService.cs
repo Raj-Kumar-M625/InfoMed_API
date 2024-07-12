@@ -27,7 +27,17 @@ namespace InfoMed.Services.Implementation
             try
             {
                 var events = await _dbContext.EventVersions.ToListAsync();
-                return _mapper.Map<List<EventVersionDto>>(events);
+              var mappedEvents = _mapper.Map<List<EventVersionDto>>(events);
+                if (events!= null)
+                {
+                    foreach(var item in mappedEvents) {
+                        var createdByString = await _dbContext.EventsMaster
+                                          .Where(x => x.IdEvent == item.IdEvent).FirstOrDefaultAsync();                                        
+                        item.CreatedBy = createdByString?.CreatedBy;
+                    }
+
+                }
+                return mappedEvents;
             }
             catch (Exception ex)
             {

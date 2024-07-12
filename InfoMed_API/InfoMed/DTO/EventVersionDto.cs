@@ -26,5 +26,6 @@
         public int NoOfDays { get; set; }
         public string? EventBackgroundImage { get; set; }
         public bool? EventView { get; set; }
+        public int? CreatedBy { get; set; }
     }
 }
