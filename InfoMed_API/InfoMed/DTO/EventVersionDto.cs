@@ -27,5 +27,7 @@
         public string? EventBackgroundImage { get; set; }
         public bool? EventView { get; set; }
         public int? CreatedBy { get; set; }
+        public bool? ShowPayNowButton { get; set; }
+        public bool? ShowPayAtVenueButton { get; set; }
     }
 }

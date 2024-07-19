@@ -289,6 +289,8 @@ namespace InfoMed.Services.Implementation
                     dbObject.LinkedInLink = _event.LinkedInLink;
                     dbObject.CopyrightText = _event.CopyrightText;
                     dbObject.ShowHurryUpContent = _event.ShowHurryUpContent;
+                    dbObject.ShowPayAtVenueButton = _event.ShowPayAtVenueButton;
+                    dbObject.ShowPayNowButton = _event.ShowPayNowButton;
                     dbObject.ApprovedBy = _event.ApprovedBy;
                     dbObject.ApprovedDate = _event.ApprovedDate;
                     dbObject.EventStartDate = _event.EventStartDate;
