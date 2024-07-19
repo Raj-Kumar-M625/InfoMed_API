@@ -31,7 +31,8 @@ namespace InfoMed.Models
         public int NoOfDays { get; set; }
         public string? EventBackgroundImage {  get; set; }
         public bool? EventView {  get; set; }
-        public bool? ShowPayNowButton {  get; set; }
-        public bool? ShowPayAtVenueButton {  get; set; }
+        public bool? ShowPayNowButton { get; set; }
+        public bool? ShowPayAtVenueButton { get; set; }
+        public string? EventBackgroundColor { get; set; }
     }
 }

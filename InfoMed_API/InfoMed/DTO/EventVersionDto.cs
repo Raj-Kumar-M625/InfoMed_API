@@ -29,5 +29,6 @@
         public int? CreatedBy { get; set; }
         public bool? ShowPayNowButton { get; set; }
         public bool? ShowPayAtVenueButton { get; set; }
+        public string? EventBackgroundColor { get; set; }
     }
 }
