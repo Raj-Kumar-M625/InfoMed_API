@@ -297,6 +297,7 @@ namespace InfoMed.Services.Implementation
                     dbObject.CopyrightText = _event.CopyrightText;
                     dbObject.ShowHurryUpContent = _event.ShowHurryUpContent;
                     dbObject.ShowPayAtVenueButton = _event.ShowPayAtVenueButton;
+                    dbObject.EventBackgroundColor = _event.EventBackgroundColor;
                     dbObject.ShowPayNowButton = _event.ShowPayNowButton;
                     dbObject.ApprovedBy = _event.ApprovedBy;
                     dbObject.ApprovedDate = _event.ApprovedDate;
@@ -386,6 +387,7 @@ namespace InfoMed.Services.Implementation
                     dbObject.IdEventVersion = _Sponser.IdEventVersion;
                     dbObject.SponsorType = _Sponser.SponsorType;
                     dbObject.SponsorName = _Sponser.SponsorName;
+                    dbObject.SponsorUrl = _Sponser.SponsorUrl;
                     dbObject.SponsorShowText = _Sponser.SponsorShowText;
                     dbObject.OrderNumber = _Sponser.OrderNumber;
                     dbObject.SponsorLogo = _Sponser.SponsorLogo;
