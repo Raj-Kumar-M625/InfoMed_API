@@ -5,7 +5,7 @@ namespace InfoMed.Services.Interface
 {
     public interface IEventService
     {
-        public Task<List<EventVersionDto>> GetEvents();
+        public Task<List<EventVersionDto>> GetEvents(string version);
         public Task<EventViewModel> GetEventDetails(string webPageName);
         public Task<EventVersionDto> AddEvent(EventVersionDto _event,string userId);
         public Task<EventVersionDto> UpdateEvent(EventVersionDto _event,string userId);

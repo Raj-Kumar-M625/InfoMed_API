@@ -3,6 +3,7 @@ using InfoMed.Data;
 using InfoMed.DTO;
 using InfoMed.Models;
 using InfoMed.Services.Interface;
+using InfoMed.Utils;
 using log4net;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,7 @@ namespace InfoMed.Services.Implementation
             _mapper = mapper;
         }
 
-        public async Task<List<EventVersionDto>> GetEvents()
+        public async Task<List<EventVersionDto>> GetEvents(string version)
         {
             try
             {
@@ -37,6 +38,12 @@ namespace InfoMed.Services.Implementation
                     }
 
                 }
+
+                if(version == Constants.LatestVersion)
+                {
+                    return mappedEvents.GroupBy(x => x.EventName).Select(x => x.LastOrDefault()).ToList();
+                }
+
                 return mappedEvents;
             }
             catch (Exception ex)

@@ -3,6 +3,7 @@ using InfoMed.Models;
 using InfoMed.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Security.Claims;
 
 namespace InfoMed.Controllers
@@ -20,9 +21,9 @@ namespace InfoMed.Controllers
         }
 
         [HttpGet("GetEvents")]
-        public async Task<ActionResult<List<EventVersionDto>>> GetEvents()
+        public async Task<ActionResult<List<EventVersionDto>>> GetEvents(string version)
         {
-            var events = await _eventService.GetEvents();
+            var events = await _eventService.GetEvents(version);
             return Ok(events);
         }
 
