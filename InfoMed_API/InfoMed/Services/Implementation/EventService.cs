@@ -516,10 +516,19 @@ namespace InfoMed.Services.Implementation
             {
                 //var _events = await _dbContext.EventVersions.Where(x => EF.Functions.Like(x.EventWebPageName, webPageName) && x.VersionStatus.ToLower().Trim() == "approved").ToListAsync();
                 //var _event = _events.Count() > 0 ? _events.OrderByDescending(x => x.IdVersion).First():null;
-                var _event = await _dbContext.EventVersions
+                var _event = new EventVersions();
+                if (webPageName == null)
+                {
+                    _event = await _dbContext.EventVersions.Where(x => x.VersionStatus.ToLower().Trim() == "approved")
+                                                                  .OrderByDescending(x => x.IdEventVersion).FirstAsync();
+                }
+                else{ 
+                    _event = await _dbContext.EventVersions
                     .Where(x => EF.Functions.Like(x.EventWebPageName, webPageName) && x.VersionStatus.ToLower().Trim() == "approved")
                     .OrderByDescending(x => x.IdVersion)
                     .FirstOrDefaultAsync();
+                }
+
                 if (_event != null)
                 {
                     var textContextAreas = await _dbContext.TextContentAreas.Where(x => x.IdEvent == _event.IdEvent && x.IdEventVersion == _event.IdEventVersion && x.Status == true).ToListAsync();

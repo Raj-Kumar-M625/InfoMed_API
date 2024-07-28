@@ -173,7 +173,7 @@ namespace InfoMed.Controllers
 
         [HttpGet("GetEventDetails")]
         [AllowAnonymous]
-        public async Task<ActionResult<EventViewModel>> GetEventDetails(string webPageName)
+        public async Task<ActionResult<EventViewModel>> GetEventDetails(string? webPageName)
         {
             var eventDetails = await _eventService.GetEventDetails(webPageName);
             if (eventDetails != null) return Ok(eventDetails);
