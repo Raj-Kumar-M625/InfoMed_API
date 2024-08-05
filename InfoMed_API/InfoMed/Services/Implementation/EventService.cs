@@ -298,6 +298,7 @@ namespace InfoMed.Services.Implementation
                     dbObject.ShowHurryUpContent = _event.ShowHurryUpContent;
                     dbObject.ShowPayAtVenueButton = _event.ShowPayAtVenueButton;
                     dbObject.EventBackgroundColor = _event.EventBackgroundColor;
+                    dbObject.ShowBookTicketButton = _event.ShowBookTicketButton;
                     dbObject.ShowPayNowButton = _event.ShowPayNowButton;
                     dbObject.ApprovedBy = _event.ApprovedBy;
                     dbObject.ApprovedDate = _event.ApprovedDate;

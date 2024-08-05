@@ -30,5 +30,6 @@
         public bool? ShowPayNowButton { get; set; }
         public bool? ShowPayAtVenueButton { get; set; }
         public string? EventBackgroundColor { get; set; }
+        public bool? ShowBookTicketButton { get; set; }
     }
 }
