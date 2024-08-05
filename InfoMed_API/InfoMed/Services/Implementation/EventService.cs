@@ -436,6 +436,7 @@ namespace InfoMed.Services.Implementation
                     dbObject.IdEvent = _speaker.IdEvent;
                     dbObject.IdEventVersion = _speaker.IdEventVersion;
                     dbObject.SpeakerName = _speaker.SpeakerName;
+                    dbObject.SpeakerDesignation = _speaker.SpeakerDesignation;
                     dbObject.AboutSpeaker = _speaker.AboutSpeaker;
                     dbObject.OrderNumber = _speaker.OrderNumber;
                     dbObject.SpeakerImage = _speaker.SpeakerImage;
